@@ -4,9 +4,8 @@ from django.test import TestCase
 
 from apps.graph.backends import InMemoryGraphBackend
 from apps.graph.services import GraphService
-
-from .engine import RecommendationEngine
-from .llm_analyzer import SkillTextAnalyzer
+from apps.recommendations.engine import RecommendationEngine
+from apps.recommendations.llm_analyzer import SkillTextAnalyzer
 
 
 class RecommendationEngineTestCase(TestCase):

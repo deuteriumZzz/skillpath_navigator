@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
+from apps.progress.models import UserSkillProgress
 from apps.skills.models import Skill
-
-from .models import UserSkillProgress
 
 User = get_user_model()
 

@@ -48,11 +48,12 @@ docker compose up --build
 
 ## Тесты
 
+Все тесты собраны в `backend/tests/` (один файл `test_<app>.py` на приложение), а не разбросаны по `apps/*/tests.py`.
+
 ```bash
 cd backend
-DB_NAME= python manage.py test apps.graph.tests apps.skills.tests apps.users.tests \
-    apps.progress.tests apps.recommendations.tests apps.resources.tests \
-    apps.graphql_schema.tests apps.api.tests
+DB_NAME= python manage.py test tests
+# или: DB_NAME= pytest tests/
 ```
 
 (`DB_NAME=` форсирует SQLite-fallback, если Postgres не поднят локально.)

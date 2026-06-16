@@ -1,8 +1,8 @@
 from django.test import TestCase
 
-from .course import CoursesService
-from .github import GitHubService
-from .youtube import YouTubeService
+from apps.resources.course import CoursesService
+from apps.resources.github import GitHubService
+from apps.resources.youtube import YouTubeService
 
 
 class MockExternalApisTestCase(TestCase):
