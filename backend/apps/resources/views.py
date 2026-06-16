@@ -1,3 +1,1 @@
-from django.shortcuts import render
-
-# Create your views here.
+# REST-эндпоинты внешних интеграций реализованы в apps.api.views, GraphQL — в apps.graphql_schema.types.
