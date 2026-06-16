@@ -42,7 +42,7 @@ class GitHubService:
     def _mock_repos(skill_name: str, limit: int) -> List[Dict]:
         return [
             {
-                "name": f"awesome-{skill_name.lower()}-{i + 1}",
+                "name": f"awesome-{skill_name}-{i + 1}",
                 "url": f"https://github.com/search?q=language:{skill_name}",
                 "language": skill_name,
                 "stars": 1000 - i * 100,

@@ -1,95 +1,132 @@
-from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import action
+from django.shortcuts import get_object_or_404
+from rest_framework import status, viewsets
 from rest_framework.response import Response
-from apps.skills.models import Skill
-from apps.skills.serializers import SkillSerializer
+from rest_framework.views import APIView
+
+from apps.graph.services import GraphService
+from apps.progress.models import UserSkillProgress
+from apps.progress.serializers import ProgressUpdateSerializer, UserSkillProgressSerializer
+from apps.progress.services import broadcast_progress_update
 from apps.recommendations.engine import RecommendationEngine
+from apps.recommendations.services import ingest_skills_from_text
+from apps.resources.course import CoursesService
 from apps.resources.github import GitHubService
 from apps.resources.youtube import YouTubeService
+from apps.skills.models import Skill, UserSkill
+from apps.skills.serializers import SkillSerializer, UserSkillSerializer
 from apps.users.models import User
 from apps.users.serializers import UserSerializer
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        skill_serializer = self.get_serializer(data=request.data)
-        if skill_serializer.is_valid():
-            skill = skill_serializer.save(owner=request.user)
 
-            # Автоматический анализ уровня навыка
-            engine = RecommendationEngine()
-            analysis = engine.analyze_skill(skill.description)
-            skill.level = analysis["level"]
-            skill.save()
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-            return Response(skill_serializer.data, status=status.HTTP_201_CREATED)
-        return Response(skill_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['get'])
-    def recommend_next(self, request, pk=None):
-        skill = self.get_object()
-        engine = RecommendationEngine()
-        recommendations = engine.get_next_skills([skill])
+class SkillGraphView(APIView):
+    """GET /api/skills/graph/ — узлы и зависимости графа."""
+
+    def get(self, request):
+        return Response(GraphService().to_graph_payload())
+
+
+class SkillNextStepView(APIView):
+    """GET /api/skills/{id}/next-step/ — рекомендованные следующие навыки. Input: skill_id."""
+
+    def get(self, request, skill_id):
+        skill = get_object_or_404(Skill, pk=skill_id)
+        recommendations = RecommendationEngine().get_next_skills([skill.name])
         return Response(recommendations)
 
-class RecommendationViewSet(viewsets.ViewSet):
-    permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=False, methods=['get'])
-    def next_skills(self, request):
-        skills = request.user.skills.all()
+class SkillPathToView(APIView):
+    """GET /api/skills/{from}/path-to/{to}/ — кратчайший путь обучения между навыками."""
+
+    def get(self, request, from_id, to_id):
+        start = get_object_or_404(Skill, pk=from_id)
+        end = get_object_or_404(Skill, pk=to_id)
+        path = GraphService().find_shortest_path(start.name, end.name)
+        if path is None:
+            return Response({"error": "Путь не найден"}, status=status.HTTP_404_NOT_FOUND)
+        return Response(path)
+
+
+class SkillResourcesView(APIView):
+    """GET /api/skills/{id}/resources/ — где искать материалы по навыку."""
+
+    def get(self, request, skill_id):
+        skill = get_object_or_404(Skill, pk=skill_id)
+        courses = CoursesService()
+        return Response({
+            "github_repos": GitHubService().search_repos(skill.name),
+            "youtube_videos": YouTubeService().search_videos(skill.name),
+            "courses": courses.search_stepik_courses(skill.name) + courses.search_coursera_courses(skill.name),
+        })
+
+
+class ProgressUpdateView(APIView):
+    """POST /api/progress/update/ — обновить прогресс. Input: skill_id, completion_percent."""
+
+    def post(self, request):
+        serializer = ProgressUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        skill = serializer.validated_data['skill_id']
+        percent = serializer.validated_data['completion_percent']
+
+        progress, _ = UserSkillProgress.objects.update_or_create(
+            user=request.user, skill=skill, defaults={'completion_percent': percent}
+        )
+        broadcast_progress_update(request.user.id, skill.name, progress.completion_percent)
+        return Response(UserSkillProgressSerializer(progress).data)
+
+
+class LearningPathCreateView(APIView):
+    """POST /api/learning-path/ — оптимизированный план обучения. Input: target_skills (массив имён навыков)."""
+
+    def post(self, request):
+        target_skills = request.data.get('target_skills', [])
+        if not target_skills:
+            return Response({"error": "Укажите target_skills"}, status=status.HTTP_400_BAD_REQUEST)
+
         engine = RecommendationEngine()
-        recommendations = engine.get_next_skills(skills)
-        return Response(recommendations)
+        known = list(request.user.user_skills.values_list('skill__name', flat=True))
+        candidate_starts = known or engine.graph.find_skills_by_level('beginner')
 
-    @action(detail=False, methods=['get'])
-    def learning_path(self, request):
-        start_skill = request.GET.get('start')
-        end_skill = request.GET.get('end')
+        plan = []
+        for target in target_skills:
+            best_path = None
+            for start_skill in candidate_starts:
+                path = engine.find_learning_path(start_skill, target)
+                if path and (best_path is None or path['distance'] < best_path['distance']):
+                    best_path = path
+            plan.append({"target": target, "path": best_path})
+        return Response({"plan": plan})
 
-        if not start_skill or not end_skill:
-            return Response(
-                {"error": "Укажите параметры start и end"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
-        engine = RecommendationEngine()
-        path = engine.find_learning_path(start_skill, end_skill)
-        return Response({"path": path} if path else {"error": "Путь не найден"})
+class UserPathView(APIView):
+    """GET /api/users/{id}/path/ — текущий путь пользователя и прогресс."""
 
-class ResourcesViewSet(viewsets.ViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        skills = UserSkill.objects.filter(user=user).select_related('skill')
+        progress = UserSkillProgress.objects.filter(user=user).select_related('skill')
+        return Response({
+            "current_skills": UserSkillSerializer(skills, many=True).data,
+            "progress": UserSkillProgressSerializer(progress, many=True).data,
+        })
 
-    @action(detail=False, methods=['get'])
-    def github_repos(self, request):
-        skill_name = request.GET.get('skill')
-        if not skill_name:
-            return Response(
-                {"error": "Укажите параметр skill"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
-        service = GitHubService()
-        repos = service.search_repos(skill_name)
-        return Response({"repos": repos})
+class IngestSkillsFromTextView(APIView):
+    """POST /api/skills/from-text/ — разобрать текстовое описание навыков пользователя через LLM."""
 
-    @action(detail=False, methods=['get'])
-    def youtube_videos(self, request):
-        skill_name = request.GET.get('skill')
-        if not skill_name:
-            return Response(
-                {"error": "Укажите параметр skill"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        service = YouTubeService()
-        videos = service.search_videos(skill_name)
-        return Response({"videos": videos})
+    def post(self, request):
+        text = request.data.get('text', '')
+        if not text:
+            return Response({"error": "Укажите text"}, status=status.HTTP_400_BAD_REQUEST)
+        created = ingest_skills_from_text(request.user, text)
+        return Response(UserSkillSerializer(created, many=True).data, status=status.HTTP_201_CREATED)

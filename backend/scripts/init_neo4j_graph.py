@@ -1,6 +1,16 @@
-from apps.graph.services import add_skill_to_graph, add_dependency
-import json
+"""Заполняет граф навыков стартовым набором. Запуск: python backend/scripts/init_neo4j_graph.py"""
+
 import os
+import sys
+
+import django
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+django.setup()
+
+from apps.graph.services import add_dependency, add_skill_to_graph  # noqa: E402
+
 
 def load_knowledge_graph():
     """Загружает начальные зависимости между навыками"""
