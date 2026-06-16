@@ -1,15 +1,18 @@
 from rest_framework import serializers
-from .models import Skill, SkillTag
 
-class SkillTagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SkillTag
-        fields = ['id', 'name']
+from .models import Skill, UserSkill
+
 
 class SkillSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    tags = SkillTagSerializer(many=True, read_only=True)
-
     class Meta:
         model = Skill
-        fields = ['id', 'name', 'description', 'level', 'owner', 'created_at', 'tags']
+        fields = ['id', 'name', 'description', 'level', 'tags', 'is_verified', 'created_at', 'updated_at']
+
+
+class UserSkillSerializer(serializers.ModelSerializer):
+    skill = SkillSerializer(read_only=True)
+    skill_id = serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all(), source='skill', write_only=True)
+
+    class Meta:
+        model = UserSkill
+        fields = ['id', 'skill', 'skill_id', 'level', 'acquired_at']
