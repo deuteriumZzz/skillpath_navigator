@@ -34,7 +34,7 @@ class SkillViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.prefetch_related("user_skills__skill").all()
     serializer_class = UserSerializer
     pagination_class = StandardPagination
 
