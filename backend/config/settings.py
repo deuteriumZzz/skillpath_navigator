@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "graphene_django",
     "corsheaders",
     "channels",
+    "drf_spectacular",
 
     # Локальные приложения
     "apps.users",
@@ -129,6 +130,7 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_PAGINATION_CLASS": "core.pagination.StandardPagination",
     "PAGE_SIZE": 20,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
@@ -171,6 +173,13 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "SkillPath Navigator API",
+    "DESCRIPTION": "API для рекомендательной системы обучения на основе графа навыков.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 # GraphQL

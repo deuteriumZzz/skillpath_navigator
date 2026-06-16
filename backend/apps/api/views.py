@@ -3,6 +3,9 @@ from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.core.cache import cache
+
+from core.constants import SKILL_GRAPH_CACHE_KEY, SKILL_GRAPH_CACHE_TTL
 from core.pagination import StandardPagination
 from core.permissions import IsAdminOrReadOnly
 from apps.skills.filters import SkillFilter
@@ -43,7 +46,11 @@ class SkillGraphView(APIView):
     """GET /api/skills/graph/ — узлы и зависимости графа."""
 
     def get(self, request):
-        return Response(GraphService().to_graph_payload())
+        payload = cache.get(SKILL_GRAPH_CACHE_KEY)
+        if payload is None:
+            payload = GraphService().to_graph_payload()
+            cache.set(SKILL_GRAPH_CACHE_KEY, payload, SKILL_GRAPH_CACHE_TTL)
+        return Response(payload)
 
 
 class SkillNextStepView(APIView):

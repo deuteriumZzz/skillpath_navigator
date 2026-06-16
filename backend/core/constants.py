@@ -13,3 +13,7 @@ LEVEL_CHOICES = [
 
 # Допустимые типы связей между навыками в графе
 RELATION_TYPES = frozenset({"DEPENDS_ON", "RELATED_TO"})
+
+# Кэш графа навыков (Redis)
+SKILL_GRAPH_CACHE_KEY = "skill:graph:payload"
+SKILL_GRAPH_CACHE_TTL = 300  # секунд
