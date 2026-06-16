@@ -1,0 +1,37 @@
+# Основной фреймворк
+Django==3.2.25
+
+# База данных (PostgreSQL)
+psycopg2-binary==2.9.9
+
+# GraphQL
+graphql-relay==3.2.0
+graphene-file-upload==1.0.0
+graphql-core==3.2.3
+
+# Аутентификация
+django-allauth==0.58.2
+cryptography==41.0.7
+
+# REST API
+djangorestframework==3.14.0
+
+# Фильтрация/поиск
+django-filter==23.5
+
+# Разработка/тестирование
+pytest==7.4.2
+pytest-django==4.5.2
+black==23.12.1
+flake8==6.1.0
+isort==5.13.2
+mypy==1.7.0
+types-python-dateutil==2.8.19
+types-requests==2.31.0.10
+types-PyYAML==6.0.12.12
+
+# Прочее (статика, логи, утилиты)
+whitenoise==6.6.0
+python-dotenv==1.0.0
+gunicorn==21.2.0
+pillow==10.1.0
