@@ -1,8 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 from apps.graph.services import GraphService
-
-LEVEL_ORDER = ["beginner", "intermediate", "advanced", "expert"]
+from core.constants import SKILL_LEVELS
 
 
 class RecommendationEngine:
@@ -31,7 +30,7 @@ class RecommendationEngine:
 
         recommendations = list(candidates.values())
         recommendations.sort(
-            key=lambda r: LEVEL_ORDER.index(r["level"]) if r["level"] in LEVEL_ORDER else 0
+            key=lambda r: SKILL_LEVELS.index(r["level"]) if r["level"] in SKILL_LEVELS else 0
         )
         return recommendations[:limit]
 

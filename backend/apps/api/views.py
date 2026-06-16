@@ -3,6 +3,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.pagination import StandardPagination
 from apps.graph.services import GraphService
 from apps.progress.models import UserSkillProgress
 from apps.progress.serializers import ProgressUpdateSerializer, UserSkillProgressSerializer
@@ -21,11 +22,13 @@ from apps.users.serializers import UserSerializer
 class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
+    pagination_class = StandardPagination
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    pagination_class = StandardPagination
 
 
 class SkillGraphView(APIView):

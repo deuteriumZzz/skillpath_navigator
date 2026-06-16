@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 
 from django.conf import settings
 
-LEVEL_CHOICES = ("beginner", "intermediate", "advanced", "expert")
+from core.constants import SKILL_LEVELS
 
 _EXTRACT_SKILLS_TOOL = {
     "name": "extract_skills",
@@ -27,7 +27,7 @@ _EXTRACT_SKILLS_TOOL = {
                     "type": "object",
                     "properties": {
                         "name": {"type": "string", "description": "Название навыка (например, Python, Django, SQL)"},
-                        "level": {"type": "string", "enum": list(LEVEL_CHOICES)},
+                        "level": {"type": "string", "enum": list(SKILL_LEVELS)},
                     },
                     "required": ["name", "level"],
                 },

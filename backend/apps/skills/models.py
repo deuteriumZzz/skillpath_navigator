@@ -2,12 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-LEVEL_CHOICES = [
-    ('beginner', _('Beginner')),
-    ('intermediate', _('Intermediate')),
-    ('advanced', _('Advanced')),
-    ('expert', _('Expert')),
-]
+from core.constants import LEVEL_CHOICES
 
 
 class Skill(models.Model):

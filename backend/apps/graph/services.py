@@ -10,9 +10,7 @@ import networkx as nx
 from django.conf import settings
 
 from apps.graph.backends import GraphBackend, InMemoryGraphBackend, Neo4jGraphBackend
-
-ALLOWED_RELATION_TYPES = {"DEPENDS_ON", "RELATED_TO"}
-LEVEL_ORDER = ["beginner", "intermediate", "advanced", "expert"]
+from core.constants import RELATION_TYPES, SKILL_LEVELS
 
 # Единый in-memory граф на процесс, чтобы данные не терялись между запросами/тестами
 # при GRAPH_BACKEND=memory (аналог "БД в памяти" для dev-режима без Neo4j).
@@ -46,7 +44,7 @@ class GraphService:
 
     def add_dependency(self, skill: str, depends_on: str, relation_type: str = "DEPENDS_ON") -> bool:
         """Помечает, что `skill` зависит от `depends_on` (depends_on нужно изучить раньше)."""
-        if relation_type not in ALLOWED_RELATION_TYPES:
+        if relation_type not in RELATION_TYPES:
             raise ValueError(f"Недопустимый тип связи: {relation_type}")
         self.backend.persist_dependency(depends_on, skill, relation_type)
         self._nx_graph.add_edge(depends_on, skill, type=relation_type)
@@ -102,9 +100,9 @@ class GraphService:
     def _edge_weight(self, u: str, v: str) -> float:
         level_u = self.get_skill_level(u)
         level_v = self.get_skill_level(v)
-        if level_u not in LEVEL_ORDER or level_v not in LEVEL_ORDER:
+        if level_u not in SKILL_LEVELS or level_v not in SKILL_LEVELS:
             return 1.0
-        return 1.0 + abs(LEVEL_ORDER.index(level_u) - LEVEL_ORDER.index(level_v))
+        return 1.0 + abs(SKILL_LEVELS.index(level_u) - SKILL_LEVELS.index(level_v))
 
     def find_shortest_path(
         self,
