@@ -33,7 +33,7 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt        # или requirements-dev.txt для линтеров/типизации
 cp .env.example ../.env                # заполнить при необходимости (ключи можно оставить пустыми — включится мок-режим)
 python manage.py migrate               # без DB_NAME в .env используется SQLite
-python manage.py createsuperuser        # опционально
+python manage.py createsuperuser        # опционально, интерактивно
 python manage.py runserver
 ```
 
@@ -73,6 +73,20 @@ DB_NAME= python manage.py test tests
 | POST | `/api/progress/update/` | Обновить прогресс по навыку (`skill_id`, `completion_percent`) |
 | POST | `/api/learning-path/` | Построить план обучения по `target_skills` |
 | GET | `/api/users/<id>/path/` | Текущие навыки и прогресс пользователя |
+
+## Суперпользователь без интерактивного ввода (CI/деплой)
+
+Для контейнеров/CI, где нельзя ответить на интерактивные вопросы `createsuperuser`,
+есть отдельная команда, читающая данные из переменных окружения (см. `.env.example`:
+`SUPERUSER_USERNAME`, `SUPERUSER_EMAIL`, `SUPERUSER_PASSWORD`):
+
+```bash
+SUPERUSER_USERNAME=admin SUPERUSER_EMAIL=admin@example.com SUPERUSER_PASSWORD=change-me \
+    python manage.py create_superuser
+```
+
+Идемпотентна: при повторном запуске с тем же `SUPERUSER_USERNAME` ничего не пересоздаёт,
+только сообщает, что пользователь уже существует. Реализация — `apps/users/management/commands/create_superuser.py`.
 
 ## GraphQL
 
