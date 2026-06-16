@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,6 +38,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Третьи стороны
+    'rest_framework',
+    'django_filters',
+    'graphql_schema',
+    'graphene_django',
+
+    # Локальные приложения
+    'apps.users',
+    'apps.skills',
+    'apps.services',
+    'apps.recommendations',
+    'apps.resources',
+    'apps.api',
+    'apps.graphql_schema',
 ]
 
 MIDDLEWARE = [
@@ -123,3 +139,25 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
+
+# GraphQL
+GRAPHENE = {
+    'SCHEMA': 'graphql_schema.schema.SkillPathSchema',
+}
+
+# Кеш (опционально)
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{os.getenv("REDIS_HOST", "localhost")}:{os.getenv("REDIS_PORT", "6379")}/1',
+    }
+}
