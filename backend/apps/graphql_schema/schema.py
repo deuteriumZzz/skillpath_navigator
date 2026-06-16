@@ -1,7 +1,6 @@
 import graphene
-from graphene_django import DjangoObjectType
-from .types import Query, Mutation
 
-class SkillPathSchema(graphene.Schema):
-    query = Query
-    mutation = Mutation
+from .mutations import Mutation
+from .types import Query
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
