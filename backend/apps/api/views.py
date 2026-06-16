@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.pagination import StandardPagination
+from core.permissions import IsAdminOrReadOnly
+from apps.skills.filters import SkillFilter
 from apps.graph.services import GraphService
 from apps.progress.models import UserSkillProgress
 from apps.progress.serializers import ProgressUpdateSerializer, UserSkillProgressSerializer
@@ -23,6 +25,12 @@ class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
     pagination_class = StandardPagination
+    permission_classes = [IsAdminOrReadOnly]
+    filterset_class = SkillFilter
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["name", "description"]
+    ordering_fields = ["name", "level", "created_at"]
+    ordering = ["name"]
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -115,6 +123,8 @@ class UserPathView(APIView):
     """GET /api/users/{id}/path/ — текущий путь пользователя и прогресс."""
 
     def get(self, request, user_id):
+        if not request.user.is_staff and request.user.pk != user_id:
+            return Response({"error": "Нет доступа"}, status=status.HTTP_403_FORBIDDEN)
         user = get_object_or_404(User, pk=user_id)
         skills = UserSkill.objects.filter(user=user).select_related('skill')
         progress = UserSkillProgress.objects.filter(user=user).select_related('skill')
