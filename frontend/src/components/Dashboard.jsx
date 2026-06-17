@@ -12,7 +12,7 @@ const TABS = [
   { key: 'progress', label: 'Прогресс' },
 ];
 
-export default function Dashboard({ onLogout }) {
+export default function Dashboard({ onLogout, userId }) {
   const [activeTab, setActiveTab] = useState('graph');
   const [skills, setSkills] = useState([]);
   const [skillsLoading, setSkillsLoading] = useState(true);
@@ -78,7 +78,7 @@ export default function Dashboard({ onLogout }) {
             {activeTab === 'graph' && <SkillGraph skills={skills} />}
             {activeTab === 'path' && <LearningPath skills={skills} />}
             {activeTab === 'resources' && <Resources skills={skills} />}
-            {activeTab === 'progress' && <Progress skills={skills} />}
+            {activeTab === 'progress' && <Progress skills={skills} userId={userId} />}
           </>
         )}
       </main>

@@ -8,14 +8,13 @@ const LEVEL_BADGE = {
   expert:       'bg-purple-100 text-purple-800',
 };
 
-export default function Progress({ skills }) {
+export default function Progress({ skills, userId }) {
   const [progressMap, setProgressMap] = useState({});
   const [sliders, setSliders] = useState({});
   const [toast, setToast] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const userId = localStorage.getItem('skillpath_uid');
   const visibleSkills = skills.slice(0, 20);
 
   useEffect(() => {

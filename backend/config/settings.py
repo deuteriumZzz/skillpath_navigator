@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     "channels",
     "drf_spectacular",
 
+    # JWT token blacklist (отзыв refresh-токенов после ротации)
+    "rest_framework_simplejwt.token_blacklist",
+
     # Локальные приложения
     "apps.users",
     "apps.skills",
@@ -95,6 +98,8 @@ if os.getenv("DB_NAME"):
             "PASSWORD": os.getenv("DB_PASSWORD", ""),
             "HOST": os.getenv("DB_HOST", "localhost"),
             "PORT": os.getenv("DB_PORT", "5432"),
+            # Держим соединения открытыми между запросами вместо пересоздания каждый раз.
+            "CONN_MAX_AGE": int(os.getenv("DB_CONN_MAX_AGE", "60")),
         }
     }
 else:
@@ -124,7 +129,7 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": False,
+    "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
 }
@@ -267,3 +272,32 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "")
 STEPIK_TOKEN = os.getenv("STEPIK_TOKEN", "")
 COURSERA_TOKEN = os.getenv("COURSERA_TOKEN", "")
+
+# Celery — асинхронные задачи (LLM-анализ и другие долгие операции)
+CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}/2"
+CELERY_RESULT_BACKEND = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}/3"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TIMEZONE = "UTC"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_RESULT_EXPIRES = 3600  # результаты хранятся 1 час
+
+# LLM rate limit: максимум запросов /api/v1/skills/from-text/ на пользователя в час
+LLM_THROTTLE_RATE_PER_HOUR = int(os.getenv("LLM_THROTTLE_RATE_PER_HOUR", "10"))
+
+# Sentry — трекинг ошибок в production
+SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.celery import CeleryIntegration
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.redis import RedisIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration(), RedisIntegration(), CeleryIntegration()],
+        traces_sample_rate=float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0.1")),
+        send_default_pii=False,
+        environment="production" if not DEBUG else "development",
+    )

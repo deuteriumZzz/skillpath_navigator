@@ -1,15 +1,6 @@
 import { useState } from 'react';
 import { api } from '../api.js';
 
-function decodeJwtUserId(token) {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.user_id;
-  } catch (_) {
-    return null;
-  }
-}
-
 export default function Auth({ onLogin }) {
   const [tab, setTab] = useState('login');
   const [username, setUsername] = useState('');
@@ -24,12 +15,7 @@ export default function Auth({ onLogin }) {
     setLoading(true);
     try {
       const data = await api.login(username, password);
-      const token = data.access;
-      localStorage.setItem('skillpath_token', token);
-      localStorage.setItem('skillpath_user', username);
-      const uid = decodeJwtUserId(token);
-      if (uid) localStorage.setItem('skillpath_uid', String(uid));
-      onLogin(token);
+      onLogin(data.access, username);
     } catch (err) {
       setError(err.message || 'Ошибка входа');
     } finally {
@@ -43,14 +29,8 @@ export default function Auth({ onLogin }) {
     setLoading(true);
     try {
       await api.register(username, email, password);
-      // Auto-login after register
       const data = await api.login(username, password);
-      const token = data.access;
-      localStorage.setItem('skillpath_token', token);
-      localStorage.setItem('skillpath_user', username);
-      const uid = decodeJwtUserId(token);
-      if (uid) localStorage.setItem('skillpath_uid', String(uid));
-      onLogin(token);
+      onLogin(data.access, username);
     } catch (err) {
       setError(err.message || 'Ошибка регистрации');
     } finally {
@@ -67,7 +47,6 @@ export default function Auth({ onLogin }) {
           <p className="text-gray-500 text-sm mt-1">Постройте свой путь в разработке</p>
         </div>
 
-        {/* Tabs */}
         <div className="flex mb-6 border-b border-gray-200">
           <button
             className={`flex-1 pb-3 text-sm font-medium transition-colors ${

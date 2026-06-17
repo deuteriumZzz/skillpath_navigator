@@ -33,6 +33,11 @@ services:
       - "7687:7687"
     volumes:
       - neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   backend:
     build: ./backend
@@ -48,6 +53,20 @@ services:
         condition: service_healthy
     expose:
       - "8000"
+
+  celery_worker:
+    build: ./backend
+    env_file: .env
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+      USE_REDIS_CACHE: "true"
+    command: celery -A config worker --loglevel=info --concurrency=2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   frontend:
     build: ./frontend

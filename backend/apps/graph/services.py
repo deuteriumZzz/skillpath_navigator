@@ -6,6 +6,8 @@ GraphService — фасад над графом навыков. Алгоритм
 
 from typing import Any, Dict, List, Optional
 
+import logging
+
 import networkx as nx
 from django.conf import settings
 
@@ -15,12 +17,22 @@ from core.constants import RELATION_TYPES, SKILL_LEVELS
 # Единый in-memory граф на процесс, чтобы данные не терялись между запросами/тестами
 # при GRAPH_BACKEND=memory (аналог "БД в памяти" для dev-режима без Neo4j).
 _shared_memory_backend: Optional[InMemoryGraphBackend] = None
+_memory_backend_warned = False
+
+_logger = logging.getLogger(__name__)
 
 
 def _default_backend() -> GraphBackend:
-    global _shared_memory_backend
+    global _shared_memory_backend, _memory_backend_warned
     if settings.GRAPH_BACKEND == "neo4j":
         return Neo4jGraphBackend(settings.NEO4J_URI, settings.NEO4J_USER, settings.NEO4J_PASSWORD)
+    if not settings.DEBUG and not _memory_backend_warned:
+        _logger.warning(
+            "GRAPH_BACKEND=memory in production (DEBUG=False). "
+            "Each gunicorn worker holds a separate in-memory graph — "
+            "set GRAPH_BACKEND=neo4j for production."
+        )
+        _memory_backend_warned = True
     if _shared_memory_backend is None:
         _shared_memory_backend = InMemoryGraphBackend()
     return _shared_memory_backend

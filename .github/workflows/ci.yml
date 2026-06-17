@@ -45,6 +45,26 @@ jobs:
       - name: flake8
         run: flake8 backend/ --max-line-length=119 --exclude=migrations,venv
 
+  mypy:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt -r backend/requirements-dev.txt
+      - name: mypy
+        working-directory: backend
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings
+          DB_NAME: ""
+          USE_REDIS_CACHE: "false"
+          GRAPH_BACKEND: memory
+        run: mypy apps config core --ignore-missing-imports --no-error-summary
+
   docker-build:
     name: Docker Build
     runs-on: ubuntu-latest

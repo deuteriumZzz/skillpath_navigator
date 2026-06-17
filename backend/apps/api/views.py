@@ -1,10 +1,14 @@
+import logging
+
+from django.core.cache import cache
+from django.db import connection, transaction
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django.core.cache import cache
+logger = logging.getLogger(__name__)
 
 from core.constants import SKILL_GRAPH_CACHE_KEY, SKILL_GRAPH_CACHE_TTL
 from core.pagination import StandardPagination
@@ -15,7 +19,6 @@ from apps.progress.models import UserSkillProgress
 from apps.progress.serializers import ProgressUpdateSerializer, UserSkillProgressSerializer
 from apps.progress.services import broadcast_progress_update
 from apps.recommendations.engine import RecommendationEngine
-from apps.recommendations.services import ingest_skills_from_text
 from apps.resources.course import CoursesService
 from apps.resources.github import GitHubService
 from apps.resources.youtube import YouTubeService
@@ -101,9 +104,18 @@ class ProgressUpdateView(APIView):
         skill = serializer.validated_data['skill_id']
         percent = serializer.validated_data['completion_percent']
 
-        progress, _ = UserSkillProgress.objects.update_or_create(
-            user=request.user, skill=skill, defaults={'completion_percent': percent}
-        )
+        with transaction.atomic():
+            try:
+                progress = UserSkillProgress.objects.select_for_update().get(
+                    user=request.user, skill=skill
+                )
+                progress.completion_percent = percent
+                progress.save(update_fields=['completion_percent'])
+            except UserSkillProgress.DoesNotExist:
+                progress = UserSkillProgress.objects.create(
+                    user=request.user, skill=skill, completion_percent=percent
+                )
+
         broadcast_progress_update(request.user.id, skill.name, progress.completion_percent)
         return Response(UserSkillProgressSerializer(progress).data)
 
@@ -147,14 +159,50 @@ class UserPathView(APIView):
 
 
 class IngestSkillsFromTextView(APIView):
-    """POST /api/skills/from-text/ — разобрать текстовое описание навыков пользователя через LLM."""
+    """POST /api/skills/from-text/ — отправляет текст на LLM-анализ через Celery.
+
+    Возвращает {task_id} для последующего опроса GET /api/v1/tasks/{task_id}/.
+    Лимит: LLM_THROTTLE_RATE_PER_HOUR запросов на пользователя в час.
+    """
 
     def post(self, request):
+        from django.conf import settings
+        from apps.recommendations.tasks import analyze_skills_text_task
+
         text = request.data.get('text', '')
         if not text:
             return Response({"error": "Укажите text"}, status=status.HTTP_400_BAD_REQUEST)
-        created = ingest_skills_from_text(request.user, text)
-        return Response(UserSkillSerializer(created, many=True).data, status=status.HTTP_201_CREATED)
+
+        rate_key = f"llm_throttle:{request.user.pk}"
+        rate_limit = getattr(settings, "LLM_THROTTLE_RATE_PER_HOUR", 10)
+        current = cache.get(rate_key, 0)
+        if current >= rate_limit:
+            return Response(
+                {"error": f"Лимит {rate_limit} запросов в час исчерпан. Попробуйте позже."},
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
+        cache.set(rate_key, current + 1, timeout=3600)
+
+        task = analyze_skills_text_task.delay(request.user.pk, text)
+        return Response({"task_id": task.id}, status=status.HTTP_202_ACCEPTED)
+
+
+class TaskStatusView(APIView):
+    """GET /api/v1/tasks/{task_id}/ — статус Celery-задачи.
+
+    Возвращает {state, result} после завершения анализа навыков.
+    """
+
+    def get(self, request, task_id):
+        from celery.result import AsyncResult
+        result = AsyncResult(task_id)
+        data: dict = {"state": result.state}
+        if result.ready():
+            if result.successful():
+                data["result"] = result.get()
+            else:
+                data["error"] = str(result.result)
+        return Response(data)
 
 
 class HealthCheckView(APIView):
@@ -165,3 +213,31 @@ class HealthCheckView(APIView):
 
     def get(self, request):
         return Response({"status": "ok"})
+
+
+class ReadinessCheckView(APIView):
+    """GET /api/v1/ready/ — readiness probe: проверяет DB и Redis."""
+
+    permission_classes = []
+    authentication_classes = []
+
+    def get(self, request):
+        checks: dict = {}
+        overall = True
+
+        try:
+            connection.ensure_connection()
+            checks["db"] = "ok"
+        except Exception:
+            checks["db"] = "error"
+            overall = False
+
+        try:
+            cache.set("_readiness_ping", "1", timeout=5)
+            checks["cache"] = "ok"
+        except Exception:
+            checks["cache"] = "error"
+            overall = False
+
+        http_status = status.HTTP_200_OK if overall else status.HTTP_503_SERVICE_UNAVAILABLE
+        return Response({"status": "ok" if overall else "degraded", "checks": checks}, status=http_status)

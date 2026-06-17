@@ -9,6 +9,8 @@ router.register(r'users', views.UserViewSet, basename='users')
 
 urlpatterns = [
     path('health/', views.HealthCheckView.as_view(), name='health'),
+    path('ready/', views.ReadinessCheckView.as_view(), name='ready'),
+    path('tasks/<str:task_id>/', views.TaskStatusView.as_view(), name='task-status'),
     path('skills/graph/', views.SkillGraphView.as_view(), name='skill-graph'),
     path('skills/from-text/', views.IngestSkillsFromTextView.as_view(), name='skills-from-text'),
     path('skills/<int:skill_id>/next-step/', views.SkillNextStepView.as_view(), name='skill-next-step'),
