@@ -1,9 +1,8 @@
+from apps.graphql_schema.views import AuthenticatedGraphQLView
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-
-from apps.graphql_schema.views import AuthenticatedGraphQLView
 
 urlpatterns = [
     path("admin/", admin.site.urls),

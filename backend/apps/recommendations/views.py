@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 class IngestSkillsFromTextView(APIView):
     def post(self, request):
-        from django.conf import settings
         from apps.recommendations.tasks import analyze_skills_text_task
+        from django.conf import settings
 
         text = request.data.get("text", "")
         if not text:

@@ -1,12 +1,5 @@
 import logging
 
-from django.core.cache import cache
-from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, viewsets
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from apps.graph.services import GraphService
 from apps.recommendations.engine import RecommendationEngine
 from apps.skills.filters import SkillFilter
@@ -15,6 +8,12 @@ from apps.skills.serializers import SkillSerializer
 from core.constants import SKILL_GRAPH_CACHE_KEY, SKILL_GRAPH_CACHE_TTL
 from core.pagination import StandardPagination
 from core.permissions import IsAdminOrReadOnly
+from django.core.cache import cache
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status, viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 logger = logging.getLogger(__name__)
 

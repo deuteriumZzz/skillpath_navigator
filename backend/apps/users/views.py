@@ -1,6 +1,6 @@
+from core.pagination import StandardPagination
 from rest_framework import generics, permissions, viewsets
 
-from core.pagination import StandardPagination
 from .models import User
 from .serializers import RegisterSerializer, UserSerializer
 

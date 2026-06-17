@@ -1,6 +1,5 @@
-from rest_framework import serializers
-
 from apps.skills.models import Skill
+from rest_framework import serializers
 
 from .models import UserSkillProgress
 

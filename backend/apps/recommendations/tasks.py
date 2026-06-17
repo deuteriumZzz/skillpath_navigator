@@ -12,9 +12,9 @@ def analyze_skills_text_task(self, user_id: int, text: str) -> dict:
     Возвращает список созданных UserSkill в виде сериализованных данных.
     """
     try:
-        from django.contrib.auth import get_user_model
         from apps.recommendations.services import ingest_skills_from_text
         from apps.skills.serializers import UserSkillSerializer
+        from django.contrib.auth import get_user_model
 
         User = get_user_model()
         user = User.objects.get(pk=user_id)

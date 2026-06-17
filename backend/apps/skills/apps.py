@@ -8,7 +8,6 @@ class SkillsConfig(AppConfig):
 
     def ready(self):
         import apps.skills.signals  # noqa: F401
-
         from django.db.utils import OperationalError, ProgrammingError
 
         try:

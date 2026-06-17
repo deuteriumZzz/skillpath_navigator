@@ -1,8 +1,7 @@
 import factory
+from apps.skills.models import Skill, UserSkill
 from django.contrib.auth import get_user_model
 from factory.django import DjangoModelFactory
-
-from apps.skills.models import Skill, UserSkill
 
 User = get_user_model()
 

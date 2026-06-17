@@ -1,5 +1,4 @@
 import graphene
-
 from apps.graph.services import GraphService
 from apps.progress.models import UserSkillProgress
 from apps.progress.services import broadcast_progress_update

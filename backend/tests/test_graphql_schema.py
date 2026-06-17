@@ -1,7 +1,6 @@
-from django.test import TestCase
-
 from apps.graphql_schema.schema import schema
 from apps.skills.models import Skill
+from django.test import TestCase
 
 
 class GraphQLSchemaTestCase(TestCase):

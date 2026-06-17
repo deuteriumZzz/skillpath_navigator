@@ -1,11 +1,10 @@
 from unittest.mock import MagicMock
 
-from django.test import TestCase
-
 from apps.graph.backends import InMemoryGraphBackend
 from apps.graph.services import GraphService
 from apps.recommendations.engine import RecommendationEngine
 from apps.recommendations.llm_analyzer import SkillTextAnalyzer
+from django.test import TestCase
 
 
 class RecommendationEngineTestCase(TestCase):

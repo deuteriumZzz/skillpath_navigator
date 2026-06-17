@@ -1,6 +1,3 @@
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
-
 from apps.api.views import HealthCheckView, ReadinessCheckView
 from apps.progress.views import LearningPathCreateView, ProgressUpdateView, UserPathView
 from apps.recommendations.views import IngestSkillsFromTextView, TaskStatusView
@@ -12,6 +9,8 @@ from apps.skills.views import (
     SkillViewSet,
 )
 from apps.users.views import UserViewSet
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r"skills", SkillViewSet, basename="skills")

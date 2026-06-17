@@ -1,7 +1,7 @@
+from core.throttles import ThrottledTokenObtainPairView
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from core.throttles import ThrottledTokenObtainPairView
 from .views import RegisterView
 
 urlpatterns = [

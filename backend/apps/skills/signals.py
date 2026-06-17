@@ -4,8 +4,8 @@ from django.dispatch import receiver
 
 @receiver(post_save, sender="skills.Skill")
 def sync_skill_to_graph(sender, instance, created, **kwargs):
-    from django.core.cache import cache
     from core.constants import SKILL_GRAPH_CACHE_KEY
+    from django.core.cache import cache
 
     if created:
         from apps.graph.services import add_skill_to_graph

@@ -11,9 +11,8 @@ MCP используется как канал самого приложения
 import re
 from typing import Any, Dict, List, Optional
 
-from django.conf import settings
-
 from core.constants import SKILL_LEVELS
+from django.conf import settings
 
 _EXTRACT_SKILLS_TOOL = {
     "name": "extract_skills",

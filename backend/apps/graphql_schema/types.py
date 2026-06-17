@@ -1,6 +1,4 @@
 import graphene
-from graphene_django import DjangoObjectType
-
 from apps.graph.services import GraphService
 from apps.recommendations.engine import RecommendationEngine
 from apps.resources.course import CoursesService
@@ -8,6 +6,7 @@ from apps.resources.github import GitHubService
 from apps.resources.youtube import YouTubeService
 from apps.skills.models import Skill, UserSkill
 from apps.users.models import User
+from graphene_django import DjangoObjectType
 
 
 class UserType(DjangoObjectType):

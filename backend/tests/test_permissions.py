@@ -1,8 +1,7 @@
+from apps.skills.models import Skill
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from apps.skills.models import Skill
 
 User = get_user_model()
 

@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 from django.test import TestCase
 from rest_framework.test import APIClient
-
 from tests.factories import SkillFactory, UserFactory
 
 

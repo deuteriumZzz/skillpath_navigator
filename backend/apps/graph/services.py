@@ -4,15 +4,13 @@ GraphService — фасад над графом навыков. Алгоритм
 от того, какой backend хранит данные (Neo4j или in-memory networkx).
 """
 
+import logging
 from typing import Any, Dict, List, Optional
 
-import logging
-
 import networkx as nx
-from django.conf import settings
-
 from apps.graph.backends import GraphBackend, InMemoryGraphBackend, Neo4jGraphBackend
 from core.constants import RELATION_TYPES, SKILL_LEVELS
+from django.conf import settings
 
 # Единый in-memory граф на процесс, чтобы данные не терялись между запросами/тестами
 # при GRAPH_BACKEND=memory (аналог "БД в памяти" для dev-режима без Neo4j).
@@ -64,8 +62,8 @@ class GraphService:
             raise ValueError(f"Недопустимый тип связи: {relation_type}")
         self.backend.persist_dependency(depends_on, skill, relation_type)
         self._nx_graph.add_edge(depends_on, skill, type=relation_type)
-        from django.core.cache import cache
         from core.constants import SKILL_GRAPH_CACHE_KEY
+        from django.core.cache import cache
 
         cache.delete(SKILL_GRAPH_CACHE_KEY)
         return True

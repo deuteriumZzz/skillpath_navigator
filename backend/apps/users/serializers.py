@@ -1,7 +1,6 @@
+from apps.skills.serializers import UserSkillSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-
-from apps.skills.serializers import UserSkillSerializer
 
 User = get_user_model()
 

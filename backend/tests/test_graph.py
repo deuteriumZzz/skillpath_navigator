@@ -1,7 +1,6 @@
-from django.test import TestCase
-
 from apps.graph.backends import InMemoryGraphBackend
 from apps.graph.services import GraphService
+from django.test import TestCase
 
 
 class GraphServiceTestCase(TestCase):

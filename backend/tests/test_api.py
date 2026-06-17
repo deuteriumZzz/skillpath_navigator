@@ -1,8 +1,7 @@
-from django.contrib.auth import get_user_model
-from rest_framework.test import APITestCase
-
 from apps.graph.services import GraphService
 from apps.skills.models import Skill, UserSkill
+from django.contrib.auth import get_user_model
+from rest_framework.test import APITestCase
 
 User = get_user_model()
 

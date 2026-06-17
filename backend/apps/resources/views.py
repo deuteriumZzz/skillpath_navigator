@@ -1,13 +1,12 @@
 import logging
 
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from apps.resources.course import CoursesService
 from apps.resources.github import GitHubService
 from apps.resources.youtube import YouTubeService
 from apps.skills.models import Skill
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 logger = logging.getLogger(__name__)
 

@@ -1,11 +1,5 @@
 import logging
 
-from django.db import transaction
-from django.shortcuts import get_object_or_404
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from apps.progress.models import UserSkillProgress
 from apps.progress.serializers import (
     ProgressUpdateSerializer,
@@ -16,6 +10,11 @@ from apps.recommendations.engine import RecommendationEngine
 from apps.skills.models import UserSkill
 from apps.skills.serializers import UserSkillSerializer
 from apps.users.models import User
+from django.db import transaction
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 logger = logging.getLogger(__name__)
 

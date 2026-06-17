@@ -1,11 +1,10 @@
 import csv
 from pathlib import Path
 
-from django.conf import settings
-from django.core.management.base import BaseCommand
-
 from apps.graph.services import GraphService
 from apps.skills.models import Skill
+from django.conf import settings
+from django.core.management.base import BaseCommand
 
 DATA_DIR = settings.BASE_DIR / "data"
 SKILLS_CSV = DATA_DIR / "skills.csv"
