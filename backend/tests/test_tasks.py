@@ -13,7 +13,7 @@ class TaskStatusViewTestCase(TestCase):
         self.user = UserFactory()
         self.client.force_authenticate(user=self.user)
 
-    @patch("apps.api.views_recommendations.AsyncResult")
+    @patch("apps.recommendations.views.AsyncResult")
     def test_pending_task(self, mock_result_cls):
         mock_result_cls.return_value.state = "PENDING"
         mock_result_cls.return_value.ready.return_value = False
@@ -23,7 +23,7 @@ class TaskStatusViewTestCase(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()["state"], "PENDING")
 
-    @patch("apps.api.views_recommendations.AsyncResult")
+    @patch("apps.recommendations.views.AsyncResult")
     def test_successful_task(self, mock_result_cls):
         mock_result_cls.return_value.state = "SUCCESS"
         mock_result_cls.return_value.ready.return_value = True

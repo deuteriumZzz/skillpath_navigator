@@ -187,6 +187,17 @@ REST_FRAMEWORK = {
     },
 }
 
+_json_formatters = (
+    {
+        "json": {
+            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "fmt": "%(asctime)s %(levelname)s %(name)s %(message)s",
+        }
+    }
+    if not DEBUG
+    else {}
+)
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -195,10 +206,7 @@ LOGGING = {
             "format": "[{asctime}] {levelname} {name}: {message}",
             "style": "{",
         },
-        "json": {
-            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
-            "fmt": "%(asctime)s %(levelname)s %(name)s %(message)s",
-        },
+        **_json_formatters,
     },
     "handlers": {
         "console": {
