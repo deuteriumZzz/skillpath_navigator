@@ -40,6 +40,7 @@ python-dotenv==1.0.0
 
 # Production-сервер
 gunicorn==21.2.0
+uvicorn[standard]==0.27.0
 
 # Тестирование
 pytest==7.4.2

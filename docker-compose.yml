@@ -1,17 +1,31 @@
 services:
   postgres:
-    image: postgres:15
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: ${DB_NAME:-skillpath_db}
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   neo4j:
     image: neo4j:5
+    profiles: [neo4j]
     environment:
       NEO4J_AUTH: ${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-password}
     ports:
@@ -20,29 +34,29 @@ services:
     volumes:
       - neo4j_data:/data
 
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
-
   backend:
     build: ./backend
-    env_file:
-      - .env
+    env_file: .env
     environment:
       DB_HOST: postgres
-      NEO4J_URI: bolt://neo4j:7687
       REDIS_HOST: redis
-      GRAPH_BACKEND: neo4j
+      USE_REDIS_CACHE: "true"
     depends_on:
-      - postgres
-      - neo4j
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    expose:
+      - "8000"
+
+  frontend:
+    build: ./frontend
     ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
+      - "80:80"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
+  redis_data:
   neo4j_data:
