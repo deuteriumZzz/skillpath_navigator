@@ -7,7 +7,8 @@ class ProgressConsumer(AsyncWebsocketConsumer):
     """Транслирует обновления прогресса пользователю в реальном времени.
 
     Подключение: ws://.../ws/progress/<user_id>/?token=<access_token>
-    Сервер рассылает событие при каждом POST /api/progress/update/ (см. apps.progress.services.broadcast_progress_update).
+    Сервер рассылает событие при каждом POST /api/progress/update/
+    (см. apps.progress.services.broadcast_progress_update).
     """
 
     async def connect(self):
