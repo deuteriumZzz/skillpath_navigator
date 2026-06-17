@@ -48,6 +48,9 @@ class GraphService:
             raise ValueError(f"Недопустимый тип связи: {relation_type}")
         self.backend.persist_dependency(depends_on, skill, relation_type)
         self._nx_graph.add_edge(depends_on, skill, type=relation_type)
+        from django.core.cache import cache
+        from core.constants import SKILL_GRAPH_CACHE_KEY
+        cache.delete(SKILL_GRAPH_CACHE_KEY)
         return True
 
     # --- Чтение ---

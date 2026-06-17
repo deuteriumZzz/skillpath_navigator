@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -30,7 +31,7 @@ class SkillViewSet(viewsets.ModelViewSet):
     pagination_class = StandardPagination
     permission_classes = [IsAdminOrReadOnly]
     filterset_class = SkillFilter
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name", "description"]
     ordering_fields = ["name", "level", "created_at"]
     ordering = ["name"]
@@ -150,3 +151,13 @@ class IngestSkillsFromTextView(APIView):
             return Response({"error": "Укажите text"}, status=status.HTTP_400_BAD_REQUEST)
         created = ingest_skills_from_text(request.user, text)
         return Response(UserSkillSerializer(created, many=True).data, status=status.HTTP_201_CREATED)
+
+
+class HealthCheckView(APIView):
+    """GET /api/v1/health/ — liveness probe для Docker/k8s."""
+
+    permission_classes = []
+    authentication_classes = []
+
+    def get(self, request):
+        return Response({"status": "ok"})
