@@ -31,17 +31,6 @@ class Skill(models.Model):
             models.Index(fields=['level']),
         ]
 
-    def save(self, *args, **kwargs):
-        from django.core.cache import cache
-        from apps.graph.services import add_skill_to_graph
-        from core.constants import SKILL_GRAPH_CACHE_KEY
-
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        if is_new:
-            add_skill_to_graph(self.name, self.level)
-        cache.delete(SKILL_GRAPH_CACHE_KEY)
-
     def __str__(self):
         return self.name
 

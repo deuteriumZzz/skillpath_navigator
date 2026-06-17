@@ -51,6 +51,5 @@ sentry-sdk[django,celery]==2.19.2
 # Monitoring (Prometheus metrics at /metrics/)
 django-prometheus==2.3.1
 
-# Тестирование
-pytest==7.4.2
-pytest-django==4.5.2
+# Structured JSON logging (production)
+python-json-logger==2.0.7

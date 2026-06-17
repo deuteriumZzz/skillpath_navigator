@@ -1,6 +1,8 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, viewsets
 
-from .serializers import RegisterSerializer
+from core.pagination import StandardPagination
+from .models import User
+from .serializers import RegisterSerializer, UserSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -8,3 +10,9 @@ class RegisterView(generics.CreateAPIView):
 
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.prefetch_related("user_skills__skill").all()
+    serializer_class = UserSerializer
+    pagination_class = StandardPagination

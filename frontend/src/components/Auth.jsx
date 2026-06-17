@@ -15,7 +15,7 @@ export default function Auth({ onLogin }) {
     setLoading(true);
     try {
       const data = await api.login(username, password);
-      onLogin(data.access, username);
+      onLogin(data.access, data.refresh, username);
     } catch (err) {
       setError(err.message || 'Ошибка входа');
     } finally {
@@ -30,7 +30,7 @@ export default function Auth({ onLogin }) {
     try {
       await api.register(username, email, password);
       const data = await api.login(username, password);
-      onLogin(data.access, username);
+      onLogin(data.access, data.refresh, username);
     } catch (err) {
       setError(err.message || 'Ошибка регистрации');
     } finally {

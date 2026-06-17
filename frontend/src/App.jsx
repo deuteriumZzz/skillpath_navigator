@@ -18,8 +18,9 @@ export default function App() {
     return stored ? decodeJwtUserId(stored) : null;
   });
 
-  function handleLogin(newToken, username) {
+  function handleLogin(newToken, refreshToken, username) {
     localStorage.setItem('skillpath_token', newToken);
+    localStorage.setItem('skillpath_refresh', refreshToken);
     localStorage.setItem('skillpath_user', username);
     setToken(newToken);
     setUserId(decodeJwtUserId(newToken));
@@ -27,6 +28,7 @@ export default function App() {
 
   function handleLogout() {
     localStorage.removeItem('skillpath_token');
+    localStorage.removeItem('skillpath_refresh');
     localStorage.removeItem('skillpath_user');
     setToken(null);
     setUserId(null);

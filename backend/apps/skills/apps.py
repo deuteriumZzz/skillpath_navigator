@@ -7,6 +7,8 @@ class SkillsConfig(AppConfig):
     label = 'skills'
 
     def ready(self):
+        import apps.skills.signals  # noqa: F401
+
         from django.db.utils import OperationalError, ProgrammingError
         try:
             from apps.graph.services import GraphService
