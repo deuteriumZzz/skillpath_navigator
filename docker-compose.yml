@@ -53,6 +53,8 @@ services:
         condition: service_healthy
     expose:
       - "8000"
+    volumes:
+      - static_files:/app/staticfiles
 
   celery_worker:
     build: ./backend
@@ -74,8 +76,11 @@ services:
       - "80:80"
     depends_on:
       - backend
+    volumes:
+      - static_files:/django_static:ro
 
 volumes:
   postgres_data:
   redis_data:
   neo4j_data:
+  static_files:

@@ -7,6 +7,7 @@ from apps.graphql_schema.views import AuthenticatedGraphQLView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('django_prometheus.urls')),  # /metrics/
     path('api/v1/auth/', include('apps.users.urls')),
     path('api/v1/', include('apps.api.urls')),
     path('graphql/', AuthenticatedGraphQLView.as_view(graphiql=settings.DEBUG)),

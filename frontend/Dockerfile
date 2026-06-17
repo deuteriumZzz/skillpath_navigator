@@ -4,7 +4,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+# npm ci requires package-lock.json; use npm install until lock file is committed.
+RUN npm install
 
 COPY . .
 RUN npm run build
