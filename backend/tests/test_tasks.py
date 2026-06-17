@@ -44,7 +44,7 @@ class IngestRateLimitTestCase(TestCase):
         self.user = UserFactory()
         self.client.force_authenticate(user=self.user)
 
-    @patch("apps.api.views_recommendations.analyze_skills_text_task")
+    @patch("apps.recommendations.tasks.analyze_skills_text_task")
     def test_rate_limit_enforced(self, mock_task):
         mock_task.delay.return_value.id = "task-123"
 
@@ -55,14 +55,18 @@ class IngestRateLimitTestCase(TestCase):
         limit = getattr(settings, "LLM_THROTTLE_RATE_PER_HOUR", 10)
         cache.set(rate_key, limit, timeout=3600)
 
-        res = self.client.post("/api/v1/skills/from-text/", {"text": "Python developer"}, format="json")
+        res = self.client.post(
+            "/api/v1/skills/from-text/", {"text": "Python developer"}, format="json"
+        )
         self.assertEqual(res.status_code, 429)
 
-    @patch("apps.api.views_recommendations.analyze_skills_text_task")
+    @patch("apps.recommendations.tasks.analyze_skills_text_task")
     def test_task_dispatched(self, mock_task):
         mock_task.delay.return_value.id = "task-abc"
 
-        res = self.client.post("/api/v1/skills/from-text/", {"text": "Django REST expert"}, format="json")
+        res = self.client.post(
+            "/api/v1/skills/from-text/", {"text": "Django REST expert"}, format="json"
+        )
 
         self.assertEqual(res.status_code, 202)
         self.assertIn("task_id", res.json())

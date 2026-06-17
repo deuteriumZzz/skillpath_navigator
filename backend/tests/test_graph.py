@@ -36,7 +36,13 @@ class GraphServiceTestCase(TestCase):
         self.assertIsNotNone(path)
         self.assertEqual(
             path["path"],
-            ["Python Basics", "Python Intermediate", "Python Advanced", "Machine Learning", "Deep Learning"],
+            [
+                "Python Basics",
+                "Python Intermediate",
+                "Python Advanced",
+                "Machine Learning",
+                "Deep Learning",
+            ],
         )
 
         path = self.graph.find_shortest_path("Python Basics", "Data Visualization")
@@ -48,13 +54,17 @@ class GraphServiceTestCase(TestCase):
         self.assertIsNone(path)
 
     def test_weighted_path(self):
-        path = self.graph.find_shortest_path("Python Basics", "Deep Learning", weighted_by_level=True)
+        path = self.graph.find_shortest_path(
+            "Python Basics", "Deep Learning", weighted_by_level=True
+        )
         self.assertIsNotNone(path)
         self.assertGreater(path["distance"], 0)
         self.assertGreaterEqual(path["weights"][0], 1.0)
 
     def test_find_all_possible_paths(self):
-        paths = self.graph.find_all_possible_paths("Python Basics", "Data Visualization", max_paths=2)
+        paths = self.graph.find_all_possible_paths(
+            "Python Basics", "Data Visualization", max_paths=2
+        )
         self.assertEqual(len(paths), 1)
         self.assertEqual(paths[0]["path"], ["Python Basics", "Data Visualization"])
 
@@ -64,7 +74,9 @@ class GraphServiceTestCase(TestCase):
         self.assertEqual(relation_types, {"REQUIRES", "UNLOCKS"})
 
     def test_can_proceed(self):
-        result = self.graph.can_proceed("Python Advanced", known_skills=["Python Basics"])
+        result = self.graph.can_proceed(
+            "Python Advanced", known_skills=["Python Basics"]
+        )
         self.assertFalse(result["can_proceed"])
         self.assertIn("Python Intermediate", result["missing_skills"])
 
@@ -76,4 +88,6 @@ class GraphServiceTestCase(TestCase):
 
     def test_invalid_relation_type_rejected(self):
         with self.assertRaises(ValueError):
-            self.graph.add_dependency("Python Advanced", "Python Basics", relation_type="DROP TABLE")
+            self.graph.add_dependency(
+                "Python Advanced", "Python Basics", relation_type="DROP TABLE"
+            )

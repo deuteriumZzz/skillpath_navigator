@@ -23,10 +23,17 @@ class GitHubService:
             "Authorization": f"token {settings.GITHUB_TOKEN}",
             "Accept": "application/vnd.github.v3+json",
         }
-        params = {"q": f"language:{skill_name}", "sort": "stars", "order": "desc", "per_page": limit}
+        params = {
+            "q": f"language:{skill_name}",
+            "sort": "stars",
+            "order": "desc",
+            "per_page": limit,
+        }
 
         try:
-            response = requests.get(self.BASE_URL, headers=headers, params=params, timeout=10)
+            response = requests.get(
+                self.BASE_URL, headers=headers, params=params, timeout=10
+            )
             response.raise_for_status()
             data = response.json()
             return [

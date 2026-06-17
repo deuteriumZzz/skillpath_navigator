@@ -10,7 +10,9 @@ class RecommendationEngine:
     def __init__(self, graph: Optional[GraphService] = None) -> None:
         self.graph = graph or GraphService()
 
-    def get_next_skills(self, known_skill_names: List[str], limit: int = 5) -> List[Dict[str, Any]]:
+    def get_next_skills(
+        self, known_skill_names: List[str], limit: int = 5
+    ) -> List[Dict[str, Any]]:
         """Навыки, которые пользователь уже может изучать (все их предпосылки выполнены)."""
         known = set(known_skill_names)
         candidates: Dict[str, Dict[str, Any]] = {}
@@ -30,13 +32,19 @@ class RecommendationEngine:
 
         recommendations = list(candidates.values())
         recommendations.sort(
-            key=lambda r: SKILL_LEVELS.index(r["level"]) if r["level"] in SKILL_LEVELS else 0
+            key=lambda r: SKILL_LEVELS.index(r["level"])
+            if r["level"] in SKILL_LEVELS
+            else 0
         )
         return recommendations[:limit]
 
-    def find_learning_path(self, start_skill: str, end_skill: str) -> Optional[Dict[str, Any]]:
+    def find_learning_path(
+        self, start_skill: str, end_skill: str
+    ) -> Optional[Dict[str, Any]]:
         return self.graph.find_shortest_path(start_skill, end_skill)
 
-    def check_readiness(self, skill_name: str, known_skill_names: List[str]) -> Dict[str, Any]:
+    def check_readiness(
+        self, skill_name: str, known_skill_names: List[str]
+    ) -> Dict[str, Any]:
         """Может ли пользователь двигаться дальше к `skill_name` с текущим набором навыков."""
         return self.graph.can_proceed(skill_name, known_skill_names)

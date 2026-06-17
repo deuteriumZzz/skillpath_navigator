@@ -6,7 +6,16 @@ from .models import Skill, UserSkill
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
-        fields = ['id', 'name', 'description', 'level', 'tags', 'is_verified', 'created_at', 'updated_at']
+        fields = [
+            "id",
+            "name",
+            "description",
+            "level",
+            "tags",
+            "is_verified",
+            "created_at",
+            "updated_at",
+        ]
 
 
 class UserSkillSerializer(serializers.ModelSerializer):
@@ -15,8 +24,10 @@ class UserSkillSerializer(serializers.ModelSerializer):
     """
 
     skill = SkillSerializer(read_only=True)
-    skill_id = serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all(), source='skill', write_only=True)
+    skill_id = serializers.PrimaryKeyRelatedField(
+        queryset=Skill.objects.all(), source="skill", write_only=True
+    )
 
     class Meta:
         model = UserSkill
-        fields = ['id', 'skill', 'skill_id', 'level', 'acquired_at']
+        fields = ["id", "skill", "skill_id", "level", "acquired_at"]

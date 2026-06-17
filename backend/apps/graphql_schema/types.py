@@ -13,7 +13,7 @@ from apps.users.models import User
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        exclude = ('password',)
+        exclude = ("password",)
 
 
 class SkillType(DjangoObjectType):
@@ -33,8 +33,8 @@ class GraphNodeType(graphene.ObjectType):
 
 
 class GraphEdgeType(graphene.ObjectType):
-    from_skill = graphene.String(name='from')
-    to_skill = graphene.String(name='to')
+    from_skill = graphene.String(name="from")
+    to_skill = graphene.String(name="to")
     type = graphene.String()
 
 
@@ -82,10 +82,16 @@ class Query(graphene.ObjectType):
     skill_graph = graphene.Field(SkillGraphType)
     next_skills = graphene.List(NextSkillType, user_id=graphene.Int(required=True))
     learning_path = graphene.Field(
-        LearningPathType, start_skill=graphene.String(required=True), end_skill=graphene.String(required=True)
+        LearningPathType,
+        start_skill=graphene.String(required=True),
+        end_skill=graphene.String(required=True),
     )
-    github_repos = graphene.List(GitHubRepoType, skill_name=graphene.String(required=True))
-    youtube_videos = graphene.List(YouTubeVideoType, skill_name=graphene.String(required=True))
+    github_repos = graphene.List(
+        GitHubRepoType, skill_name=graphene.String(required=True)
+    )
+    youtube_videos = graphene.List(
+        YouTubeVideoType, skill_name=graphene.String(required=True)
+    )
     courses = graphene.List(CourseType, skill_name=graphene.String(required=True))
 
     def resolve_users(self, info):
@@ -96,13 +102,16 @@ class Query(graphene.ObjectType):
 
     def resolve_skill_graph(self, info):
         payload = GraphService().to_graph_payload()
-        nodes = [GraphNodeType(**n) for n in payload['nodes']]
-        edges = [GraphEdgeType(from_skill=e['from'], to_skill=e['to'], type=e['type']) for e in payload['edges']]
+        nodes = [GraphNodeType(**n) for n in payload["nodes"]]
+        edges = [
+            GraphEdgeType(from_skill=e["from"], to_skill=e["to"], type=e["type"])
+            for e in payload["edges"]
+        ]
         return SkillGraphType(nodes=nodes, edges=edges)
 
     def resolve_next_skills(self, info, user_id):
         user = User.objects.get(id=user_id)
-        known = list(user.user_skills.values_list('skill__name', flat=True))
+        known = list(user.user_skills.values_list("skill__name", flat=True))
         engine = RecommendationEngine()
         return [NextSkillType(**r) for r in engine.get_next_skills(known)]
 
@@ -117,9 +126,13 @@ class Query(graphene.ObjectType):
         return [GitHubRepoType(**r) for r in GitHubService().search_repos(skill_name)]
 
     def resolve_youtube_videos(self, info, skill_name):
-        return [YouTubeVideoType(**v) for v in YouTubeService().search_videos(skill_name)]
+        return [
+            YouTubeVideoType(**v) for v in YouTubeService().search_videos(skill_name)
+        ]
 
     def resolve_courses(self, info, skill_name):
         service = CoursesService()
-        courses = service.search_stepik_courses(skill_name) + service.search_coursera_courses(skill_name)
+        courses = service.search_stepik_courses(
+            skill_name
+        ) + service.search_coursera_courses(skill_name)
         return [CourseType(**c) for c in courses]

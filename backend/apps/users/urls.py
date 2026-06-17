@@ -5,7 +5,7 @@ from core.throttles import ThrottledTokenObtainPairView
 from .views import RegisterView
 
 urlpatterns = [
-    path('register/', RegisterView.as_view(), name='register'),
-    path('token/', ThrottledTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("register/", RegisterView.as_view(), name="register"),
+    path("token/", ThrottledTokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]

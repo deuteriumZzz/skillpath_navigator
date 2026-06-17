@@ -7,11 +7,11 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    skills = UserSkillSerializer(many=True, read_only=True, source='user_skills')
+    skills = UserSkillSerializer(many=True, read_only=True, source="user_skills")
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'avatar', 'bio', 'skills']
+        fields = ["id", "username", "email", "avatar", "bio", "skills"]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -19,10 +19,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password']
+        fields = ["id", "username", "email", "password"]
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
+        password = validated_data.pop("password")
         user = User(**validated_data)
         user.set_password(password)
         user.save()

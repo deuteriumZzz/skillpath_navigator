@@ -6,7 +6,9 @@ from channels.layers import get_channel_layer
 logger = logging.getLogger(__name__)
 
 
-def broadcast_progress_update(user_id: int, skill_name: str, completion_percent: int) -> None:
+def broadcast_progress_update(
+    user_id: int, skill_name: str, completion_percent: int
+) -> None:
     """Отправляет обновление прогресса всем активным WebSocket-подключениям пользователя.
 
     Это лучшее-из-возможных уведомление, а не основная бизнес-операция: если Redis/channel
@@ -17,11 +19,13 @@ def broadcast_progress_update(user_id: int, skill_name: str, completion_percent:
         return
     try:
         async_to_sync(channel_layer.group_send)(
-            f'progress_{user_id}',
+            f"progress_{user_id}",
             {
-                'type': 'progress_update',
-                'data': {'skill': skill_name, 'completion_percent': completion_percent},
+                "type": "progress_update",
+                "data": {"skill": skill_name, "completion_percent": completion_percent},
             },
         )
     except Exception:
-        logger.warning('Не удалось отправить WebSocket-уведомление о прогрессе', exc_info=True)
+        logger.warning(
+            "Не удалось отправить WebSocket-уведомление о прогрессе", exc_info=True
+        )

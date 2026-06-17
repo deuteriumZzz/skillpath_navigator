@@ -14,16 +14,20 @@ class IngestSkillsFromTextView(APIView):
         from django.conf import settings
         from apps.recommendations.tasks import analyze_skills_text_task
 
-        text = request.data.get('text', '')
+        text = request.data.get("text", "")
         if not text:
-            return Response({"error": "Укажите text"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Укажите text"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         rate_key = f"llm_throttle:{request.user.pk}"
         rate_limit = getattr(settings, "LLM_THROTTLE_RATE_PER_HOUR", 10)
         current = cache.get(rate_key, 0)
         if current >= rate_limit:
             return Response(
-                {"error": f"Лимит {rate_limit} запросов в час исчерпан. Попробуйте позже."},
+                {
+                    "error": f"Лимит {rate_limit} запросов в час исчерпан. Попробуйте позже."
+                },
                 status=status.HTTP_429_TOO_MANY_REQUESTS,
             )
         cache.set(rate_key, current + 1, timeout=3600)

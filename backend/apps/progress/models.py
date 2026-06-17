@@ -10,27 +10,27 @@ class UserSkillProgress(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='progress_entries',
-        verbose_name=_('Пользователь'),
+        related_name="progress_entries",
+        verbose_name=_("Пользователь"),
     )
     skill = models.ForeignKey(
-        'skills.Skill',
+        "skills.Skill",
         on_delete=models.CASCADE,
-        related_name='progress_entries',
-        verbose_name=_('Навык'),
+        related_name="progress_entries",
+        verbose_name=_("Навык"),
     )
     completion_percent = models.PositiveSmallIntegerField(
         default=0,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
-        verbose_name=_('Процент прохождения'),
+        verbose_name=_("Процент прохождения"),
     )
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Обновлено'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Обновлено"))
 
     class Meta:
-        verbose_name = _('Прогресс по навыку')
-        verbose_name_plural = _('Прогресс по навыкам')
-        unique_together = ('user', 'skill')
-        ordering = ['-updated_at']
+        verbose_name = _("Прогресс по навыку")
+        verbose_name_plural = _("Прогресс по навыкам")
+        unique_together = ("user", "skill")
+        ordering = ["-updated_at"]
 
     def __str__(self):
         return f"{self.user} — {self.skill}: {self.completion_percent}%"

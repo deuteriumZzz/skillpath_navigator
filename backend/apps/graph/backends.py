@@ -22,7 +22,9 @@ class GraphBackend(ABC):
         ...
 
     @abstractmethod
-    def persist_dependency(self, prerequisite: str, skill: str, relation_type: str) -> None:
+    def persist_dependency(
+        self, prerequisite: str, skill: str, relation_type: str
+    ) -> None:
         ...
 
     @abstractmethod
@@ -39,7 +41,9 @@ class InMemoryGraphBackend(GraphBackend):
     def persist_skill(self, name: str, level: str) -> None:
         self._graph.add_node(name, level=level, type="Skill")
 
-    def persist_dependency(self, prerequisite: str, skill: str, relation_type: str) -> None:
+    def persist_dependency(
+        self, prerequisite: str, skill: str, relation_type: str
+    ) -> None:
         if prerequisite not in self._graph:
             self._graph.add_node(prerequisite, level="beginner", type="Skill")
         if skill not in self._graph:
@@ -67,7 +71,9 @@ class Neo4jGraphBackend(GraphBackend):
                 level=level,
             )
 
-    def persist_dependency(self, prerequisite: str, skill: str, relation_type: str) -> None:
+    def persist_dependency(
+        self, prerequisite: str, skill: str, relation_type: str
+    ) -> None:
         query = (
             "MERGE (p:Skill {name: $prerequisite}) "
             "MERGE (s:Skill {name: $skill}) "
@@ -79,7 +85,9 @@ class Neo4jGraphBackend(GraphBackend):
     def load_networkx_graph(self) -> nx.DiGraph:
         graph = nx.DiGraph()
         with self._driver.session() as session:
-            for record in session.run("MATCH (s:Skill) RETURN s.name AS name, s.level AS level"):
+            for record in session.run(
+                "MATCH (s:Skill) RETURN s.name AS name, s.level AS level"
+            ):
                 graph.add_node(record["name"], level=record["level"], type="Skill")
             for record in session.run(
                 "MATCH (p:Skill)-[r]->(s:Skill) RETURN p.name AS source, s.name AS target, type(r) AS rel"

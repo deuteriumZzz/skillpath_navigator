@@ -25,7 +25,11 @@ class SkillViewSet(viewsets.ModelViewSet):
     pagination_class = StandardPagination
     permission_classes = [IsAdminOrReadOnly]
     filterset_class = SkillFilter
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
     search_fields = ["name", "description"]
     ordering_fields = ["name", "level", "created_at"]
     ordering = ["name"]
@@ -53,5 +57,7 @@ class SkillPathToView(APIView):
         end = get_object_or_404(Skill, pk=to_id)
         path = GraphService().find_shortest_path(start.name, end.name)
         if path is None:
-            return Response({"error": "Путь не найден"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Путь не найден"}, status=status.HTTP_404_NOT_FOUND
+            )
         return Response(path)

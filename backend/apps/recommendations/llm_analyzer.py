@@ -26,7 +26,10 @@ _EXTRACT_SKILLS_TOOL = {
                 "items": {
                     "type": "object",
                     "properties": {
-                        "name": {"type": "string", "description": "Название навыка (например, Python, Django, SQL)"},
+                        "name": {
+                            "type": "string",
+                            "description": "Название навыка (например, Python, Django, SQL)",
+                        },
                         "level": {"type": "string", "enum": list(SKILL_LEVELS)},
                     },
                     "required": ["name", "level"],
@@ -37,7 +40,15 @@ _EXTRACT_SKILLS_TOOL = {
     },
 }
 
-_ADVANCED_HINTS = ("эксперт", "продвинут", "профессионал", "опытн", "senior", "advanced", "expert")
+_ADVANCED_HINTS = (
+    "эксперт",
+    "продвинут",
+    "профессионал",
+    "опытн",
+    "senior",
+    "advanced",
+    "expert",
+)
 _BEGINNER_HINTS = ("начина", "изуча", "основ", "junior", "beginner", "новичок")
 _INTERMEDIATE_HINTS = ("средн", "уверенн", "intermediate", "практическ")
 
@@ -78,7 +89,9 @@ class SkillTextAnalyzer:
             ],
         }
         if settings.MCP_SERVER_URLS:
-            request_kwargs["extra_headers"] = {"anthropic-beta": "mcp-client-2025-04-04"}
+            request_kwargs["extra_headers"] = {
+                "anthropic-beta": "mcp-client-2025-04-04"
+            }
             request_kwargs["mcp_servers"] = [
                 {"type": "url", "url": url, "name": f"mcp-server-{i}"}
                 for i, url in enumerate(settings.MCP_SERVER_URLS)
@@ -108,7 +121,9 @@ class SkillTextAnalyzer:
             elif any(hint in lowered for hint in _BEGINNER_HINTS):
                 level = "beginner"
             name = re.sub(
-                r"\b(" + "|".join(_ADVANCED_HINTS + _BEGINNER_HINTS + _INTERMEDIATE_HINTS) + r")\w*\b",
+                r"\b("
+                + "|".join(_ADVANCED_HINTS + _BEGINNER_HINTS + _INTERMEDIATE_HINTS)
+                + r")\w*\b",
                 "",
                 chunk,
                 flags=re.IGNORECASE,

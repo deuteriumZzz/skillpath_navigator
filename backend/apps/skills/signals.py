@@ -9,5 +9,6 @@ def sync_skill_to_graph(sender, instance, created, **kwargs):
 
     if created:
         from apps.graph.services import add_skill_to_graph
+
         add_skill_to_graph(instance.name, instance.level)
     cache.delete(SKILL_GRAPH_CACHE_KEY)

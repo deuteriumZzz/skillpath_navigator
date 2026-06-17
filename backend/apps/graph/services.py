@@ -25,7 +25,9 @@ _logger = logging.getLogger(__name__)
 def _default_backend() -> GraphBackend:
     global _shared_memory_backend, _memory_backend_warned
     if settings.GRAPH_BACKEND == "neo4j":
-        return Neo4jGraphBackend(settings.NEO4J_URI, settings.NEO4J_USER, settings.NEO4J_PASSWORD)
+        return Neo4jGraphBackend(
+            settings.NEO4J_URI, settings.NEO4J_USER, settings.NEO4J_PASSWORD
+        )
     if not settings.DEBUG and not _memory_backend_warned:
         _logger.warning(
             "GRAPH_BACKEND=memory in production (DEBUG=False). "
@@ -54,7 +56,9 @@ class GraphService:
         self._nx_graph.add_node(name, level=level, type="Skill")
         return True
 
-    def add_dependency(self, skill: str, depends_on: str, relation_type: str = "DEPENDS_ON") -> bool:
+    def add_dependency(
+        self, skill: str, depends_on: str, relation_type: str = "DEPENDS_ON"
+    ) -> bool:
         """Помечает, что `skill` зависит от `depends_on` (depends_on нужно изучить раньше)."""
         if relation_type not in RELATION_TYPES:
             raise ValueError(f"Недопустимый тип связи: {relation_type}")
@@ -62,6 +66,7 @@ class GraphService:
         self._nx_graph.add_edge(depends_on, skill, type=relation_type)
         from django.core.cache import cache
         from core.constants import SKILL_GRAPH_CACHE_KEY
+
         cache.delete(SKILL_GRAPH_CACHE_KEY)
         return True
 
@@ -76,7 +81,11 @@ class GraphService:
         return self._nx_graph.nodes[name].get("level")
 
     def find_skills_by_level(self, level: str, limit: int = 10) -> List[str]:
-        return [n for n, data in self._nx_graph.nodes(data=True) if data.get("level") == level][:limit]
+        return [
+            n
+            for n, data in self._nx_graph.nodes(data=True)
+            if data.get("level") == level
+        ][:limit]
 
     def get_prerequisites(self, skill_name: str) -> List[str]:
         """Навыки, которые нужно изучить до `skill_name` (прямые зависимости)."""
@@ -96,9 +105,21 @@ class GraphService:
             return []
         result = []
         for prereq in self._nx_graph.predecessors(skill_name):
-            result.append({"relation_type": "REQUIRES", "related_skill": prereq, "level": self.get_skill_level(prereq)})
+            result.append(
+                {
+                    "relation_type": "REQUIRES",
+                    "related_skill": prereq,
+                    "level": self.get_skill_level(prereq),
+                }
+            )
         for unlocked in self._nx_graph.successors(skill_name):
-            result.append({"relation_type": "UNLOCKS", "related_skill": unlocked, "level": self.get_skill_level(unlocked)})
+            result.append(
+                {
+                    "relation_type": "UNLOCKS",
+                    "related_skill": unlocked,
+                    "level": self.get_skill_level(unlocked),
+                }
+            )
         return result
 
     def can_proceed(self, skill_name: str, known_skills: List[str]) -> Dict[str, Any]:
@@ -145,9 +166,16 @@ class GraphService:
             if weighted_by_level:
                 for u, v in self._nx_graph.edges():
                     self._nx_graph[u][v]["weight"] = self._edge_weight(u, v)
-                path = nx.shortest_path(self._nx_graph, start_skill, end_skill, weight="weight")
-                distance = nx.shortest_path_length(self._nx_graph, start_skill, end_skill, weight="weight")
-                weights = [self._nx_graph[path[i]][path[i + 1]]["weight"] for i in range(len(path) - 1)]
+                path = nx.shortest_path(
+                    self._nx_graph, start_skill, end_skill, weight="weight"
+                )
+                distance = nx.shortest_path_length(
+                    self._nx_graph, start_skill, end_skill, weight="weight"
+                )
+                weights = [
+                    self._nx_graph[path[i]][path[i + 1]]["weight"]
+                    for i in range(len(path) - 1)
+                ]
             else:
                 path = nx.shortest_path(self._nx_graph, start_skill, end_skill)
                 distance = float(len(path) - 1)
@@ -180,13 +208,17 @@ class GraphService:
 
         result = []
         for path in all_paths:
-            weights = [self._edge_weight(path[i], path[i + 1]) for i in range(len(path) - 1)]
-            result.append({
-                "path": path,
-                "distance": sum(weights),
-                "weights": weights,
-                "levels": [self.get_skill_level(node) for node in path],
-            })
+            weights = [
+                self._edge_weight(path[i], path[i + 1]) for i in range(len(path) - 1)
+            ]
+            result.append(
+                {
+                    "path": path,
+                    "distance": sum(weights),
+                    "weights": weights,
+                    "levels": [self.get_skill_level(node) for node in path],
+                }
+            )
         return result
 
     def to_graph_payload(self) -> Dict[str, Any]:
@@ -206,5 +238,7 @@ def add_skill_to_graph(name: str, level: str = "beginner") -> bool:
     return GraphService().add_skill_to_graph(name, level)
 
 
-def add_dependency(skill: str, depends_on: str, relation_type: str = "DEPENDS_ON") -> bool:
+def add_dependency(
+    skill: str, depends_on: str, relation_type: str = "DEPENDS_ON"
+) -> bool:
     return GraphService().add_dependency(skill, depends_on, relation_type)

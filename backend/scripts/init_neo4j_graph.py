@@ -6,7 +6,7 @@ import sys
 import django
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
 from apps.graph.services import add_dependency, add_skill_to_graph  # noqa: E402
@@ -46,6 +46,7 @@ def load_knowledge_graph():
     for skill, deps in dependencies.items():
         for dep in deps:
             add_dependency(skill, dep)
+
 
 if __name__ == "__main__":
     load_knowledge_graph()

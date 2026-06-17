@@ -15,10 +15,16 @@ def env_bool(name: str, default: bool) -> bool:
 _SECRET_KEY_DEFAULT = "django-insecure-dev-only-change-me"
 SECRET_KEY = os.getenv("SECRET_KEY", _SECRET_KEY_DEFAULT)
 DEBUG = env_bool("DEBUG", True)
-ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h.strip()]
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if h.strip()
+]
 
 if not DEBUG and SECRET_KEY == _SECRET_KEY_DEFAULT:
-    raise RuntimeError("SECRET_KEY must be set to a secure value in production (DEBUG=False).")
+    raise RuntimeError(
+        "SECRET_KEY must be set to a secure value in production (DEBUG=False)."
+    )
 
 
 INSTALLED_APPS = [
@@ -28,7 +34,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # Третьи стороны
     "rest_framework",
     "rest_framework_simplejwt",
@@ -37,13 +42,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "channels",
     "drf_spectacular",
-
     # Prometheus metrics (/metrics/)
     "django_prometheus",
-
     # JWT token blacklist (отзыв refresh-токенов после ротации)
     "rest_framework_simplejwt.token_blacklist",
-
     # Локальные приложения
     "apps.users",
     "apps.skills",
@@ -117,7 +119,9 @@ else:
 
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -234,7 +238,9 @@ GRAPHENE = {
 
 # CORS
 CORS_ALLOWED_ORIGINS = [
-    o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",") if o.strip()
+    o.strip()
+    for o in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+    if o.strip()
 ]
 
 # Кэш (Redis с fallback на in-memory, чтобы тесты/dev без Redis не падали)
@@ -258,7 +264,14 @@ if env_bool("USE_REDIS_CACHE", True):
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {"hosts": [(os.getenv("REDIS_HOST", "localhost"), int(os.getenv("REDIS_PORT", "6379")))]},
+            "CONFIG": {
+                "hosts": [
+                    (
+                        os.getenv("REDIS_HOST", "localhost"),
+                        int(os.getenv("REDIS_PORT", "6379")),
+                    )
+                ]
+            },
         }
     }
 else:
@@ -274,7 +287,9 @@ NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 # MCP-серверы (Model Context Protocol), которыми LLM может пользоваться как доп. инструментами
-MCP_SERVER_URLS = [u.strip() for u in os.getenv("MCP_SERVER_URLS", "").split(",") if u.strip()]
+MCP_SERVER_URLS = [
+    u.strip() for u in os.getenv("MCP_SERVER_URLS", "").split(",") if u.strip()
+]
 
 # Внешние интеграции (GitHub/YouTube/курсы)
 USE_MOCK_EXTERNAL_APIS = env_bool("USE_MOCK_EXTERNAL_APIS", True)

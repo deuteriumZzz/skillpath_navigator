@@ -16,8 +16,11 @@ class SkillResourcesView(APIView):
     def get(self, request, skill_id):
         skill = get_object_or_404(Skill, pk=skill_id)
         courses = CoursesService()
-        return Response({
-            "github_repos": GitHubService().search_repos(skill.name),
-            "youtube_videos": YouTubeService().search_videos(skill.name),
-            "courses": courses.search_stepik_courses(skill.name) + courses.search_coursera_courses(skill.name),
-        })
+        return Response(
+            {
+                "github_repos": GitHubService().search_repos(skill.name),
+                "youtube_videos": YouTubeService().search_videos(skill.name),
+                "courses": courses.search_stepik_courses(skill.name)
+                + courses.search_coursera_courses(skill.name),
+            }
+        )

@@ -43,5 +43,10 @@ class ReadinessCheckView(APIView):
             checks["cache"] = "error"
             overall = False
 
-        http_status = status.HTTP_200_OK if overall else status.HTTP_503_SERVICE_UNAVAILABLE
-        return Response({"status": "ok" if overall else "degraded", "checks": checks}, status=http_status)
+        http_status = (
+            status.HTTP_200_OK if overall else status.HTTP_503_SERVICE_UNAVAILABLE
+        )
+        return Response(
+            {"status": "ok" if overall else "degraded", "checks": checks},
+            status=http_status,
+        )

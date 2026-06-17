@@ -6,11 +6,11 @@ from .models import UserSkillProgress
 
 
 class UserSkillProgressSerializer(serializers.ModelSerializer):
-    skill = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    skill = serializers.SlugRelatedField(slug_field="name", read_only=True)
 
     class Meta:
         model = UserSkillProgress
-        fields = ['id', 'skill', 'completion_percent', 'updated_at']
+        fields = ["id", "skill", "completion_percent", "updated_at"]
 
 
 class ProgressUpdateSerializer(serializers.Serializer):

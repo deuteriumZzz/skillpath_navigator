@@ -5,7 +5,9 @@ from apps.skills.models import Skill, UserSkill
 from .llm_analyzer import SkillTextAnalyzer
 
 
-def ingest_skills_from_text(user, text: str, analyzer: Optional[SkillTextAnalyzer] = None) -> List[UserSkill]:
+def ingest_skills_from_text(
+    user, text: str, analyzer: Optional[SkillTextAnalyzer] = None
+) -> List[UserSkill]:
     """Разбирает свободный текст пользователя в список навыков (через LLM) и сохраняет их."""
     analyzer = analyzer or SkillTextAnalyzer()
     parsed = analyzer.analyze(text)
