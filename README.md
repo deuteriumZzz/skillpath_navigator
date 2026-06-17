@@ -339,7 +339,7 @@ docker compose up --build -d
 - **Admin:** `http://your-server-ip/admin/`
 - **API:** `http://your-server-ip/api/v1/`
 - **Swagger:** `http://your-server-ip/api/docs/`
-- **Flower:** `http://your-server-ip:5555/` (мониторинг Celery)
+- **Flower:** `http://your-server-ip/flower/` (мониторинг Celery, требует логин)
 
 ### 4. HTTPS с Let's Encrypt
 
@@ -479,15 +479,22 @@ updateProgress(skillName: String!, completionPercent: Int!)
 
 ### Flower — Celery Dashboard
 
-Доступен на `http://localhost:5555` (или `http://your-server-ip:5555`).
+Доступен на `http://localhost/flower/` (через nginx, требует HTTP Basic Auth).
 
 Показывает активные задачи, очереди, историю выполнения, статус воркеров.
+
+Порт 5555 не публикуется наружу — Flower доступен только через nginx-прокси. Логин задаётся через `.env`:
+
+```env
+FLOWER_USER=flower
+FLOWER_PASSWORD=your-strong-password
+```
 
 ```bash
 # Запустить через docker compose (включён по умолчанию)
 docker compose up flower -d
 
-# Или локально
+# Или локально (без auth, только для dev)
 celery -A config flower --port=5555
 ```
 

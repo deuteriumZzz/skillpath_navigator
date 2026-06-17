@@ -82,9 +82,12 @@ services:
     env_file: .env
     environment:
       CELERY_BROKER_URL: redis://redis:6379/2
-    command: celery -A config flower --port=5555
-    ports:
-      - "5555:5555"
+    command: >
+      celery -A config flower --port=5555
+      --basic-auth=${FLOWER_USER:-flower}:${FLOWER_PASSWORD:-changeme}
+      --url-prefix=flower
+    expose:
+      - "5555"
     depends_on:
       - redis
       - celery_worker
