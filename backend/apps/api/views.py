@@ -1,4 +1,5 @@
 import logging
+from typing import Any, List
 
 from django.core.cache import cache
 from django.db import connection
@@ -12,8 +13,8 @@ logger = logging.getLogger(__name__)
 class HealthCheckView(APIView):
     """GET /api/v1/health/ — liveness probe."""
 
-    permission_classes = []
-    authentication_classes = []
+    permission_classes: List[Any] = []
+    authentication_classes: List[Any] = []
 
     def get(self, request):
         return Response({"status": "ok"})
@@ -22,8 +23,8 @@ class HealthCheckView(APIView):
 class ReadinessCheckView(APIView):
     """GET /api/v1/ready/ — readiness probe: проверяет DB и Redis."""
 
-    permission_classes = []
-    authentication_classes = []
+    permission_classes: List[Any] = []
+    authentication_classes: List[Any] = []
 
     def get(self, request):
         checks: dict = {}

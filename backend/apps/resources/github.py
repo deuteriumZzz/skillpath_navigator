@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 import requests
 from django.conf import settings
@@ -23,7 +23,7 @@ class GitHubService:
             "Authorization": f"token {settings.GITHUB_TOKEN}",
             "Accept": "application/vnd.github.v3+json",
         }
-        params = {
+        params: Dict[str, Union[str, int]] = {
             "q": f"language:{skill_name}",
             "sort": "stars",
             "order": "desc",

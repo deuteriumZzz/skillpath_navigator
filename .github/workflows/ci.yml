@@ -63,7 +63,7 @@ jobs:
           DB_NAME: ""
           USE_REDIS_CACHE: "false"
           GRAPH_BACKEND: memory
-        run: mypy apps config core --ignore-missing-imports --no-error-summary
+        run: mypy apps config core --ignore-missing-imports --no-error-summary --explicit-package-bases --exclude='apps/.*/migrations'
 
   docker-build:
     name: Docker Build
