@@ -37,7 +37,7 @@
 | Документация | drf-spectacular (OpenAPI 3.0 + Swagger UI) |
 | Фронтенд | React 18 + Vite 5 + Tailwind CSS + vis-network |
 | Прокси | nginx (reverse proxy + раздача статики из shared volume) |
-| Мониторинг | Prometheus (/metrics/) + Flower (Celery dashboard) |
+| Мониторинг | Prometheus + Grafana (дашборды) + Flower (Celery dashboard) |
 | Логирование | JSON-логи в production (python-json-logger) |
 | Трекинг ошибок | Sentry (опционально, через `SENTRY_DSN`) |
 
@@ -56,6 +56,8 @@
 │  /admin/     → gunicorn :8000       │
 │  /graphql/   → gunicorn :8000       │
 │  /ws/        → gunicorn :8000       │
+│  /flower/    → flower :5555 (Basic Auth) │
+│  /grafana/   → grafana :3000        │
 │  /metrics    → только Docker-сеть   │
 │  /static/    → shared volume        │
 └────────────────┬────────────────────┘
@@ -101,6 +103,14 @@ skillpath_navigator/
 ├── .pre-commit-config.yaml       # black, isort, flake8
 ├── Makefile
 ├── docker-compose.yml
+├── monitoring/
+│   ├── prometheus.yml            # scrape config (Django /metrics, 15s)
+│   └── grafana/
+│       ├── provisioning/
+│       │   ├── datasources/      # Prometheus datasource (auto)
+│       │   └── dashboards/       # dashboard provider (auto)
+│       └── dashboards/
+│           └── skillpath.json    # 6 панелей: RPS, latency, DB, cache, errors
 ├── backend/
 │   ├── Dockerfile
 │   ├── entrypoint.sh             # migrate → collectstatic → superuser → seed → gunicorn
@@ -281,6 +291,10 @@ celery -A config worker --loglevel=info
 | `SUPERUSER_PASSWORD` | _(пусто)_ | Пароль суперпользователя |
 | `GUNICORN_WORKERS` | `2` | Число воркеров gunicorn |
 | `DJANGO_LOG_LEVEL` | `INFO` | Уровень логирования |
+| `FLOWER_USER` | `flower` | Логин Flower dashboard |
+| `FLOWER_PASSWORD` | `changeme` | Пароль Flower dashboard |
+| `GF_ADMIN_USER` | `admin` | Логин Grafana |
+| `GF_ADMIN_PASSWORD` | `changeme` | Пароль Grafana |
 
 ---
 
@@ -324,6 +338,11 @@ GRAPH_BACKEND=memory
 SUPERUSER_USERNAME=admin
 SUPERUSER_EMAIL=admin@yourdomain.com
 SUPERUSER_PASSWORD=<сложный пароль>
+
+FLOWER_USER=flower
+FLOWER_PASSWORD=<сложный пароль>
+GF_ADMIN_USER=admin
+GF_ADMIN_PASSWORD=<сложный пароль>
 ```
 
 ### 3. Запустить
