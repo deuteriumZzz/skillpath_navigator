@@ -44,6 +44,7 @@ uvicorn[standard]==0.27.0
 
 # Celery
 celery[redis]==5.3.6
+flower==2.0.1
 
 # Error tracking
 sentry-sdk[django,celery]==2.19.2
