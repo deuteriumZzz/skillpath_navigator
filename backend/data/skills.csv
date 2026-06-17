@@ -1,0 +1,25 @@
+name,level,description,tags,is_verified
+Python Basics,beginner,"Синтаксис, типы данных, функции, исключения, модули","python,programming",true
+Git & GitHub,beginner,"Контроль версий: коммиты, ветки, pull requests, code review","vcs,tools",true
+Linux & Shell,beginner,"Командная строка, файловая система, bash-скрипты, переменные окружения","linux,devops",true
+SQL Basics,beginner,"SELECT, JOIN, GROUP BY, индексы, транзакции, нормализация","database,sql",true
+HTML & CSS,beginner,"Структура страниц, Flexbox, Grid, адаптивная вёрстка","web,frontend",true
+Python OOP,intermediate,"Классы, наследование, декораторы, magic methods, dataclasses","python,oop",true
+Django,intermediate,"ORM, views, URL routing, шаблоны, middleware, signals, admin","python,web,framework",true
+PostgreSQL,intermediate,"Сложные запросы, индексы, EXPLAIN ANALYZE, миграции, JSON","database,sql",true
+REST API Design,intermediate,"HTTP-методы, статус-коды, аутентификация, версионирование, OpenAPI","api,backend",true
+Docker,intermediate,"Dockerfile, docker compose, слои образов, volumes, networks","devops,containers",true
+JavaScript,intermediate,"ES6+, async/await, fetch, DOM, модули","web,frontend",true
+pytest,intermediate,"Фикстуры, параметризация, моки, coverage, TDD","python,testing",true
+Django REST Framework,advanced,"ViewSets, serializers, permissions, throttling, filters, pagination","python,api,backend",true
+Redis,advanced,"Кэширование, pub/sub, очереди, TTL, persistence, cluster","database,caching",true
+Celery,advanced,"Асинхронные задачи, beat-расписание, retry, мониторинг","python,async,tasks",true
+WebSockets,advanced,"Django Channels, channel layers, JWT-аутентификация, real-time","backend,real-time",true
+GraphQL,advanced,"Схема, типы, mutations, N+1, DataLoader, subscriptions","api,backend",true
+CI/CD,advanced,"GitHub Actions, линтеры, тесты в pipeline, Docker build, деплой","devops",true
+TypeScript,advanced,"Типы, интерфейсы, generics, utility types, tsconfig","web,frontend",true
+System Design,expert,"CAP-теорема, шардинг, очереди, кэш, балансировка, мониторинг","architecture",true
+Kubernetes,expert,"Pod, Deployment, Service, Ingress, ConfigMap, helm-чарты","devops,containers",true
+Microservices,expert,"Service mesh, API gateway, event sourcing, CQRS, saga","architecture,backend",true
+Neo4j,expert,"Cypher, графовые алгоритмы, моделирование данных, GDS","database,graph",true
+Machine Learning Basics,expert,"sklearn, pandas, numpy, классификация, регрессия, кросс-валидация","ml,python",true

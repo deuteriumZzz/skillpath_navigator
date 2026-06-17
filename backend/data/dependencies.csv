@@ -1,0 +1,27 @@
+skill,depends_on
+Python OOP,Python Basics
+Django,Python OOP
+Django,SQL Basics
+PostgreSQL,SQL Basics
+REST API Design,Django
+Django REST Framework,Django
+Django REST Framework,REST API Design
+Docker,Linux & Shell
+pytest,Python Basics
+Redis,Docker
+Celery,Redis
+Celery,Django
+WebSockets,Django
+WebSockets,Redis
+GraphQL,Django REST Framework
+CI/CD,Docker
+CI/CD,Git & GitHub
+TypeScript,JavaScript
+Kubernetes,Docker
+System Design,Django REST Framework
+System Design,Docker
+Microservices,System Design
+Microservices,Docker
+Neo4j,Python OOP
+Machine Learning Basics,Python OOP
+Machine Learning Basics,SQL Basics
