@@ -5,6 +5,10 @@ from django.conf import settings
 
 
 class YouTubeService:
+    """Поиск обучающих видео на YouTube по названию навыка. При отсутствии YOUTUBE_API_KEY
+    или при USE_MOCK_EXTERNAL_APIS=True возвращает мок-данные без сетевых запросов.
+    """
+
     BASE_URL = "https://www.googleapis.com/youtube/v3/search"
 
     def search_videos(self, skill_name: str, limit: int = 3) -> List[Dict]:

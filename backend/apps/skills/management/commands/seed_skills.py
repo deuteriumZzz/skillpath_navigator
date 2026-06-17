@@ -15,11 +15,17 @@ VALID_LEVELS = {'beginner', 'intermediate', 'advanced', 'expert'}
 
 
 def _read_skills(path: Path) -> list[dict]:
+    """Читает CSV-файл с навыками и возвращает список строк в виде словарей."""
     with open(path, encoding='utf-8', newline='') as f:
         return list(csv.DictReader(f))
 
 
 class Command(BaseCommand):
+    """Команда управления для первоначальной загрузки навыков и зависимостей из CSV-файлов
+    в базу данных (модель Skill) и граф навыков (GraphService). Идемпотентна: повторный
+    запуск не создаёт дубликаты навыков благодаря get_or_create.
+    """
+
     help = 'Загружает навыки и зависимости из backend/data/*.csv в БД и граф'
 
     def add_arguments(self, parser):
@@ -33,6 +39,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """Выполняет загрузку: сначала создаёт навыки из skills CSV, затем добавляет
+        зависимости из deps CSV в граф через GraphService. Некорректные строки пропускаются
+        с выводом предупреждения в stderr.
+        """
         skills_path: Path = options['skills']
         deps_path: Path = options['deps']
 

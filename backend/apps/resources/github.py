@@ -5,6 +5,10 @@ from django.conf import settings
 
 
 class GitHubService:
+    """Поиск репозиториев GitHub по названию навыка. При отсутствии GITHUB_TOKEN
+    или при USE_MOCK_EXTERNAL_APIS=True возвращает мок-данные без сетевых запросов.
+    """
+
     BASE_URL = "https://api.github.com/search/repositories"
 
     def search_repos(self, skill_name: str, limit: int = 5) -> List[Dict]:

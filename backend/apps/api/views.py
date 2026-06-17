@@ -26,6 +26,8 @@ from apps.users.serializers import UserSerializer
 
 
 class SkillViewSet(viewsets.ModelViewSet):
+    """CRUD-набор для навыков с поддержкой фильтрации, поиска и сортировки."""
+
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
     pagination_class = StandardPagination
@@ -38,6 +40,8 @@ class SkillViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """Read-only набор для пользователей с предзагрузкой их навыков."""
+
     queryset = User.objects.prefetch_related("user_skills__skill").all()
     serializer_class = UserSerializer
     pagination_class = StandardPagination

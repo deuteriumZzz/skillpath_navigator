@@ -101,6 +101,9 @@ class GraphService:
         }
 
     def _edge_weight(self, u: str, v: str) -> float:
+        """Вес ребра (u → v): 1.0 плюс разница индексов уровней сложности навыков.
+        Чем больше «прыжок» по уровню, тем дороже переход при поиске кратчайшего пути.
+        """
         level_u = self.get_skill_level(u)
         level_v = self.get_skill_level(v)
         if level_u not in SKILL_LEVELS or level_v not in SKILL_LEVELS:
@@ -153,6 +156,10 @@ class GraphService:
         end_skill: str,
         max_paths: int = 3,
     ) -> List[Dict[str, Any]]:
+        """Возвращает до `max_paths` простых путей от start_skill до end_skill,
+        отсортированных по длине (числу шагов). Каждый путь включает веса рёбер
+        и уровни навыков в узлах.
+        """
         if start_skill not in self._nx_graph or end_skill not in self._nx_graph:
             return []
 

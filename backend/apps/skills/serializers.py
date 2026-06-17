@@ -10,6 +10,10 @@ class SkillSerializer(serializers.ModelSerializer):
 
 
 class UserSkillSerializer(serializers.ModelSerializer):
+    """Сериализатор связи пользователь–навык: при чтении возвращает вложенный объект навыка,
+    при записи принимает skill_id (PK).
+    """
+
     skill = SkillSerializer(read_only=True)
     skill_id = serializers.PrimaryKeyRelatedField(queryset=Skill.objects.all(), source='skill', write_only=True)
 
