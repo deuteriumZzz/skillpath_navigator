@@ -340,6 +340,7 @@ docker compose up --build -d
 - **API:** `http://your-server-ip/api/v1/`
 - **Swagger:** `http://your-server-ip/api/docs/`
 - **Flower:** `http://your-server-ip/flower/` (мониторинг Celery, требует логин)
+- **Grafana:** `http://your-server-ip/grafana/` (метрики Django, логин из `.env`)
 
 ### 4. HTTPS с Let's Encrypt
 
@@ -498,9 +499,31 @@ docker compose up flower -d
 celery -A config flower --port=5555
 ```
 
+### Grafana — дашборды
+
+Доступна на `http://localhost/grafana/` (или `http://your-server-ip/grafana/`). Логин задаётся через `.env`:
+
+```env
+GF_ADMIN_USER=admin
+GF_ADMIN_PASSWORD=your-strong-password
+```
+
+При первом запуске автоматически поднимается дашборд **SkillPath Navigator** с 6 панелями:
+
+| Панель | Метрика |
+|---|---|
+| Request Rate | HTTP-запросы по методу (req/s) |
+| Response Status Codes | Ответы по статус-коду (req/s) |
+| P95 Latency by View | 95-й перцентиль времени ответа по view |
+| DB Query Rate | Запросы к БД (queries/s) |
+| Cache Hit Rate | Процент попаданий в Redis-кэш |
+| Error Rate | 4xx + 5xx запросы в секунду |
+
+Prometheus scrape-интервал — 15 секунд. Данные хранятся 15 дней (`prometheus_data` volume).
+
 ### Prometheus
 
-Метрики Django доступны на `/metrics` — только из Docker-сети (nginx блокирует внешний доступ). Подключайте Prometheus-scraper изнутри сети.
+Prometheus работает внутри Docker-сети (`prometheus:9090`) и scrape-ит Django `/metrics` каждые 15 секунд. Порт 9090 не публикуется наружу — доступ только через Grafana.
 
 ### Sentry
 
