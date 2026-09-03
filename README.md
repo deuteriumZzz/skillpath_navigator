@@ -19,14 +19,7 @@
 
 Пользователь описывает свои навыки (в том числе свободным текстом — разбирается через LLM), система строит граф зависимостей между навыками, рекомендует следующие шаги, строит оптимальный путь обучения и подсказывает где искать материалы (GitHub, YouTube, курсы).
 
-<p align="center">
-  <img src=".github/assets/screenshot-login.png" width="49%" alt="Вход">
-  <img src=".github/assets/screenshot-path.png" width="49%" alt="Путь обучения">
-</p>
-<p align="center">
-  <img src=".github/assets/screenshot-graph.png" width="49%" alt="Граф навыков">
-  <img src=".github/assets/screenshot-resources.png" width="49%" alt="Ресурсы для изучения">
-</p>
+
 
 ## Содержание
 
