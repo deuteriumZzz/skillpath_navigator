@@ -1,6 +1,23 @@
+<div align="center">
+
+<img src=".github/assets/banner.svg" alt="SkillPath Navigator" width="100%">
+
 # SkillPath Navigator
 
-Рекомендательная система обучения для разработчиков. Пользователь описывает свои навыки (в том числе свободным текстом — разбирается через LLM), система строит граф зависимостей между навыками, рекомендует следующие шаги, строит оптимальный путь обучения и подсказывает где искать материалы (GitHub, YouTube, курсы).
+Рекомендательная система обучения для разработчиков на базе LLM и графа знаний
+
+[![CI](https://github.com/deuteriumZzz/skillpath_navigator/actions/workflows/ci.yml/badge.svg)](https://github.com/deuteriumZzz/skillpath_navigator/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.11-3776AB?logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-4.2-092E20?logo=django&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![Neo4j](https://img.shields.io/badge/Neo4j-5-4581C3?logo=neo4j&logoColor=white)
+![Coverage](https://img.shields.io/badge/coverage-72%25-brightgreen)
+
+**[Русский](README.md)** · **[English](README.en.md)**
+
+</div>
+
+Пользователь описывает свои навыки (в том числе свободным текстом — разбирается через LLM), система строит граф зависимостей между навыками, рекомендует следующие шаги, строит оптимальный путь обучения и подсказывает где искать материалы (GitHub, YouTube, курсы).
 
 ## Содержание
 

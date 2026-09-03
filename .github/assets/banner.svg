@@ -1,0 +1,51 @@
+<svg width="1280" height="320" viewBox="0 0 1280 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#151b3b"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7dd3fc"/>
+      <stop offset="0.5" stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#f472b6"/>
+    </linearGradient>
+    <radialGradient id="node" cx="0.35" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#93c5fd"/>
+      <stop offset="1" stop-color="#4f46e5"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="320" fill="url(#bg)"/>
+
+  <!-- skill graph edges -->
+  <g stroke="#4b5563" stroke-width="1.5" opacity="0.55">
+    <line x1="905" y1="70" x2="1005" y2="120"/>
+    <line x1="905" y1="70" x2="985" y2="45"/>
+    <line x1="1005" y1="120" x2="1120" y2="95"/>
+    <line x1="1005" y1="120" x2="1060" y2="200"/>
+    <line x1="1060" y1="200" x2="1170" y2="215"/>
+    <line x1="1060" y1="200" x2="985" y2="260"/>
+    <line x1="1120" y1="95" x2="1210" y2="150"/>
+    <line x1="1170" y1="215" x2="1210" y2="150"/>
+    <line x1="905" y1="70" x2="850" y2="150"/>
+    <line x1="850" y1="150" x2="985" y2="260"/>
+  </g>
+
+  <!-- skill graph nodes -->
+  <g>
+    <circle cx="905" cy="70" r="9" fill="url(#node)"/>
+    <circle cx="985" cy="45" r="6" fill="url(#node)"/>
+    <circle cx="1005" cy="120" r="12" fill="url(#node)"/>
+    <circle cx="1120" cy="95" r="7" fill="url(#node)"/>
+    <circle cx="1210" cy="150" r="9" fill="url(#node)"/>
+    <circle cx="1060" cy="200" r="11" fill="url(#node)"/>
+    <circle cx="1170" cy="215" r="7" fill="url(#node)"/>
+    <circle cx="985" cy="260" r="8" fill="url(#node)"/>
+    <circle cx="850" cy="150" r="6" fill="url(#node)"/>
+  </g>
+
+  <!-- text -->
+  <text x="80" y="150" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="58" font-weight="700" fill="url(#title)">SkillPath Navigator</text>
+  <text x="82" y="195" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="21" fill="#cbd5e1">AI-powered learning path recommender for developers</text>
+  <text x="82" y="228" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#8891a7">Django · DRF · GraphQL · Neo4j · Celery · Claude · React</text>
+</svg>
