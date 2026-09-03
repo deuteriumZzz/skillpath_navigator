@@ -80,6 +80,9 @@ export default function SkillGraph({ skills }) {
 
         if (containerRef.current) {
           networkRef.current = new Network(containerRef.current, { nodes, edges }, options);
+          networkRef.current.once('afterDrawing', () =>
+            networkRef.current?.fit({ minZoomLevel: 0.6, maxZoomLevel: 1 })
+          );
         }
 
         setLoading(false);
@@ -104,25 +107,26 @@ export default function SkillGraph({ skills }) {
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Граф навыков</h2>
 
-      {loading && (
-        <div className="flex justify-center items-center" style={{ height: '550px' }}>
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-        </div>
-      )}
+      <div className="relative" style={{ height: '550px' }}>
+        {loading && (
+          <div className="absolute inset-0 flex justify-center items-center bg-white">
+            <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
 
-      {!loading && empty && (
-        <div className="flex flex-col items-center justify-center text-gray-500" style={{ height: '550px' }}>
-          <div className="text-5xl mb-4">🕸️</div>
-          <p className="text-lg font-medium text-gray-700">Граф пуст.</p>
-          <p className="text-sm mt-1 font-mono bg-gray-100 px-3 py-1.5 rounded-lg">
-            python manage.py seed_skills
-          </p>
-        </div>
-      )}
+        {!loading && empty && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 bg-white">
+            <div className="text-5xl mb-4">🕸️</div>
+            <p className="text-lg font-medium text-gray-700">Граф пуст.</p>
+            <p className="text-sm mt-1 font-mono bg-gray-100 px-3 py-1.5 rounded-lg">
+              python manage.py seed_skills
+            </p>
+          </div>
+        )}
 
-      {!loading && !empty && (
-        <div ref={containerRef} style={{ height: '550px', width: '100%' }} />
-      )}
+        {/* Always mounted so containerRef is set before the graph data arrives */}
+        <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
+      </div>
 
       {/* Legend */}
       <div className="mt-4 flex flex-wrap gap-3">

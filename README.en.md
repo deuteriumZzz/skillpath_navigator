@@ -19,6 +19,15 @@ An LLM- and graph-powered learning path recommender for developers
 
 Users describe their skills — including as free-form text, parsed by an LLM — and the system builds a dependency graph between skills, recommends the next steps, computes an optimal learning path, and points to where to find material (GitHub, YouTube, courses).
 
+<p align="center">
+  <img src=".github/assets/screenshot-login.png" width="49%" alt="Login">
+  <img src=".github/assets/screenshot-path.png" width="49%" alt="Learning path">
+</p>
+<p align="center">
+  <img src=".github/assets/screenshot-graph.png" width="49%" alt="Skill graph">
+  <img src=".github/assets/screenshot-resources.png" width="49%" alt="Learning resources">
+</p>
+
 ## Contents
 
 - [Stack](#stack)
